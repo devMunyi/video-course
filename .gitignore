@@ -7,3 +7,4 @@ dist/
 prisma/migrations/
 src/generated/
 .env*
+.claude/
