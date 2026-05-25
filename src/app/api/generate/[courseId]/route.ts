@@ -1,0 +1,45 @@
+import { type NextRequest, NextResponse } from "next/server"
+import { db } from "@/server/db"
+import { fetchTranscript } from "@/server/services/youtube"
+import { generateCourse } from "@/server/services/claude"
+import type { Prisma } from "@/generated/prisma/client"
+
+// Allow long-running generation (up to 5 min on Vercel)
+export const maxDuration = 300
+
+export async function POST(
+  _req: NextRequest,
+  { params }: { params: Promise<{ courseId: string }> },
+) {
+  const { courseId } = await params
+
+  const course = await db.course.findUnique({ where: { id: courseId } })
+  if (!course) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
+  try {
+    await db.course.update({ where: { id: courseId }, data: { status: "GENERATING" } })
+
+    const transcript = await fetchTranscript(course.videoId)
+    const content = await generateCourse(transcript)
+
+    await db.course.update({
+      where: { id: courseId },
+      data: {
+        status: "READY",
+        title: content.title,
+        description: content.description,
+        content: content as unknown as Prisma.InputJsonValue,
+      },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error"
+    console.error(`[generate/${courseId}]`, msg)
+    await db.course.update({
+      where: { id: courseId },
+      data: { status: "FAILED", errorMsg: msg },
+    })
+    return NextResponse.json({ error: msg }, { status: 500 })
+  }
+}

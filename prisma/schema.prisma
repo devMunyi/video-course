@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── better-auth tables ───────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          String    @default("USER")
+
+  sessions  Session[]
+  accounts  Account[]
+  courses   Course[]
+  progress  UserProgress[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+// ─── App tables ───────────────────────────────────────────────────────────────
+
+model Course {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  youtubeUrl  String
+  videoId     String
+  title       String       @default("")
+  description String       @default("")
+  thumbnail   String       @default("")
+  status      CourseStatus @default(PENDING)
+  content     Json?
+  errorMsg    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  progress    UserProgress[]
+}
+
+model UserProgress {
+  id                  String   @id @default(cuid())
+  userId              String
+  courseId            String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course              Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  quizAnswers         Json     @default("{}")
+  recallSelfScores    Json     @default("{}")
+  completedMilestones String[] @default([])
+  updatedAt           DateTime @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+enum CourseStatus {
+  PENDING
+  GENERATING
+  READY
+  FAILED
+}

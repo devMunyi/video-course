@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-default-300;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-default-400;
+}
