@@ -5,3 +5,5 @@ node_modules/
 dist/
 *.log
 prisma/migrations/
+src/generated/
+.env*

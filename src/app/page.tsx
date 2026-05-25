@@ -22,7 +22,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-          Powered by Claude AI
+          Powered by AI
         </div>
         <h1 className="max-w-3xl text-5xl font-bold leading-tight tracking-tight">
           Turn any YouTube video into an{" "}
