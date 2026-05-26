@@ -9,6 +9,7 @@ import { api } from "@/trpc/react"
 import type { CourseContent } from "@/server/services/claude"
 import VideoEmbed from "@/components/course/VideoEmbed"
 import { AnimatedDots } from "@/components/AnimatedDots"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import ActiveRecall from "@/components/course/ActiveRecall"
 import Quiz from "@/components/course/Quiz"
 import MilestoneSidebar from "@/components/course/MilestoneSidebar"
@@ -204,6 +205,7 @@ export default function CoursePage() {
         <span className="text-default-300">/</span>
         <h1 className="flex-1 truncate text-sm font-medium">{course.title}</h1>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <span className="text-xs text-default-400">{totalPct}% complete</span>
           <Progress
             value={totalPct}

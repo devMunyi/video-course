@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { AnimatedDots } from "@/components/AnimatedDots"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { Button, Card, CardBody, Chip, Image, Progress } from "@heroui/react"
 import { api } from "@/trpc/react"
 import { signOut, useSession } from "@/lib/auth-client"
@@ -47,6 +48,7 @@ export default function DashboardPage() {
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-sm text-default-500">{session?.user.name}</span>
+          <ThemeToggle />
           <Button variant="ghost" size="sm" onPress={handleSignOut}>
             Sign out
           </Button>

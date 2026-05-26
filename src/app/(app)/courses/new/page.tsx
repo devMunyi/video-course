@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Button, Card, CardBody, Input } from "@heroui/react"
 import { api } from "@/trpc/react"
 import toast from "react-hot-toast"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 export default function NewCoursePage() {
   const router = useRouter()
@@ -32,9 +33,12 @@ export default function NewCoursePage() {
         <Link href="/dashboard" className="text-xl font-bold text-primary">
           VideoCourse
         </Link>
-        <Button as={Link} href="/dashboard" variant="ghost" size="sm">
-          ← Back
-        </Button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button as={Link} href="/dashboard" variant="ghost" size="sm">
+            ← Back
+          </Button>
+        </div>
       </nav>
 
       <main className="flex flex-1 items-center justify-center px-4 py-16">
