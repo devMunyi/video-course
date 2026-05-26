@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { AnimatedDots } from "@/components/AnimatedDots"
 import { Button, Card, CardBody, Chip, Image, Progress } from "@heroui/react"
 import { api } from "@/trpc/react"
 import { signOut, useSession } from "@/lib/auth-client"
@@ -117,7 +118,11 @@ export default function DashboardPage() {
                     <div className="px-4 pb-4">
                       <div className="mb-1 flex items-start justify-between gap-2">
                         <h3 className="line-clamp-2 text-sm font-semibold">
-                          {course.title || "Generating title..."}
+                          {course.title || (
+                            <span className="inline-flex items-baseline">
+                              Generating title<AnimatedDots />
+                            </span>
+                          )}
                         </h3>
                         <Chip
                           size="sm"

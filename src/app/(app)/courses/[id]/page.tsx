@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { api } from "@/trpc/react"
 import type { CourseContent } from "@/server/services/claude"
 import VideoEmbed from "@/components/course/VideoEmbed"
+import { AnimatedDots } from "@/components/AnimatedDots"
 import ActiveRecall from "@/components/course/ActiveRecall"
 import Quiz from "@/components/course/Quiz"
 import MilestoneSidebar from "@/components/course/MilestoneSidebar"
@@ -164,7 +165,7 @@ export default function CoursePage() {
           </div>
           <div>
             <h2 className="text-xl font-bold">
-              {course.status === "PENDING" ? "Queuing your course..." : "Generating your course..."}
+              {course.status === "PENDING" ? <>Queuing your course<AnimatedDots /></> : <>Generating your course<AnimatedDots /></>}
             </h2>
             <p className="mt-1 text-default-500">
               We&apos;re extracting the transcript and building your course with AI.
