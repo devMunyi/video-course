@@ -160,7 +160,11 @@ COURSE DESCRIPTION: ${course.description ?? ""}`,
       })
 
       try {
-        const text = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "[]"
+        let text = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "[]"
+        // Strip markdown fences Claude sometimes adds
+        if (text.startsWith("```")) {
+          text = text.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "").trim()
+        }
         const raw = JSON.parse(text) as string[]
 
         const existing = raw
@@ -173,7 +177,8 @@ COURSE DESCRIPTION: ${course.description ?? ""}`,
         const newSuggestion = newEntry ? newEntry.replace("NEW:", "").trim() : null
 
         return { existing, newSuggestion }
-      } catch {
+      } catch (e) {
+        console.error("[suggestTopics] parse error:", e)
         return { existing: [], newSuggestion: null }
       }
     }),

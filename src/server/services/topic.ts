@@ -31,11 +31,17 @@ export async function resolveTopicId(
     }],
   })
 
-  const answer = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "NEW"
+  let answer = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "NEW"
+  // Strip markdown fences if Claude wraps the response
+  if (answer.startsWith("```")) {
+    answer = answer.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "").trim()
+  }
   const topicNames = allTopics.map((t) => t.name)
 
-  if (answer !== "NEW" && topicNames.includes(answer)) {
-    return allTopics.find((t) => t.name === answer)!.id
+  // Case-insensitive match in case Claude changes capitalisation
+  const matched = allTopics.find((t) => t.name.toLowerCase() === answer.toLowerCase())
+  if (answer !== "NEW" && matched) {
+    return matched.id
   }
 
   // 3. No match — create new topic

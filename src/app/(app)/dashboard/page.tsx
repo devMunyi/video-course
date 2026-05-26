@@ -47,7 +47,7 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
 
   const { data: suggestData, isFetching: loadingSuggestions } = api.course.suggestTopics.useQuery(
     { id: course.id },
-    { enabled: editing, staleTime: Infinity, retry: false },
+    { enabled: editing, staleTime: 0, retry: 1 },
   )
 
   const updateTopic = api.course.updateTopic.useMutation({
