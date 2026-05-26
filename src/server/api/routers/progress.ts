@@ -10,6 +10,7 @@ export const progressRouter = createTRPCRouter({
         quizAnswers: z.record(z.string(), z.string()).optional(),
         recallSelfScores: z.record(z.string(), z.string()).optional(),
         completedMilestones: z.array(z.string()).optional(),
+        milestoneNotes: z.record(z.string(), z.string()).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -24,6 +25,10 @@ export const progressRouter = createTRPCRouter({
       const mergedRecall: Prisma.InputJsonValue = {
         ...(existing?.recallSelfScores as Record<string, string> ?? {}),
         ...(input.recallSelfScores ?? {}),
+      }
+      const mergedNotes: Prisma.InputJsonValue = {
+        ...(existing?.milestoneNotes as Record<string, string> ?? {}),
+        ...(input.milestoneNotes ?? {}),
       }
       const mergedMilestones = [
         ...new Set([
@@ -40,11 +45,13 @@ export const progressRouter = createTRPCRouter({
           quizAnswers: (input.quizAnswers ?? {}) as Prisma.InputJsonValue,
           recallSelfScores: (input.recallSelfScores ?? {}) as Prisma.InputJsonValue,
           completedMilestones: input.completedMilestones ?? [],
+          milestoneNotes: (input.milestoneNotes ?? {}) as Prisma.InputJsonValue,
         },
         update: {
           ...(input.quizAnswers && { quizAnswers: mergedQuiz }),
           ...(input.recallSelfScores && { recallSelfScores: mergedRecall }),
           ...(input.completedMilestones && { completedMilestones: mergedMilestones }),
+          ...(input.milestoneNotes && { milestoneNotes: mergedNotes }),
         },
       })
     }),

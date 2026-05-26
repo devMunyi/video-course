@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 import ActiveRecall from "@/components/course/ActiveRecall"
 import Quiz from "@/components/course/Quiz"
 import MilestoneSidebar from "@/components/course/MilestoneSidebar"
+import MilestoneNotes from "@/components/course/MilestoneNotes"
 import toast from "react-hot-toast"
 
 const POLL_INTERVAL = 3000
@@ -91,6 +92,7 @@ export default function CoursePage() {
   const completedMilestones: string[] = progress?.completedMilestones ?? []
   const quizAnswers = (progress?.quizAnswers ?? {}) as Record<string, string>
   const recallScores = (progress?.recallSelfScores ?? {}) as Record<string, string>
+  const milestoneNotes = (progress?.milestoneNotes ?? {}) as Record<string, string>
 
   const currentMilestone = milestones[currentMilestoneIndex]
 
@@ -114,6 +116,16 @@ export default function CoursePage() {
       upsertProgress.mutate({
         courseId: id,
         quizAnswers: { [questionId]: optionId },
+      })
+    },
+    [id, upsertProgress],
+  )
+
+  const handleSaveNote = useCallback(
+    (milestoneId: string, note: string) => {
+      upsertProgress.mutate({
+        courseId: id,
+        milestoneNotes: { [milestoneId]: note },
       })
     },
     [id, upsertProgress],
@@ -225,6 +237,7 @@ export default function CoursePage() {
             milestones={milestones}
             currentIndex={currentMilestoneIndex}
             completedIds={completedMilestones}
+            noteIds={Object.keys(milestoneNotes).filter((id) => milestoneNotes[id]?.trim())}
             onSelect={setCurrentMilestoneIndex}
           />
 
@@ -295,6 +308,14 @@ export default function CoursePage() {
                     questions={currentMilestone.quiz}
                     savedAnswers={quizAnswers}
                     onAnswer={handleQuizAnswer}
+                  />
+
+                  {/* Notes */}
+                  <MilestoneNotes
+                    milestoneId={currentMilestone.id}
+                    savedNote={milestoneNotes[currentMilestone.id] ?? ""}
+                    onSave={handleSaveNote}
+                    isSaving={upsertProgress.isPending}
                   />
 
                   {/* Navigation */}

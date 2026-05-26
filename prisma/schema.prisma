@@ -103,6 +103,7 @@ model UserProgress {
   quizAnswers         Json     @default("{}")
   recallSelfScores    Json     @default("{}")
   completedMilestones String[] @default([])
+  milestoneNotes      Json     @default("{}")
   updatedAt           DateTime @updatedAt
 
   @@unique([userId, courseId])

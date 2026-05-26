@@ -45,6 +45,7 @@ export type UserProgressCountAggregateOutputType = {
   quizAnswers: number
   recallSelfScores: number
   completedMilestones: number
+  milestoneNotes: number
   updatedAt: number
   _all: number
 }
@@ -71,6 +72,7 @@ export type UserProgressCountAggregateInputType = {
   quizAnswers?: true
   recallSelfScores?: true
   completedMilestones?: true
+  milestoneNotes?: true
   updatedAt?: true
   _all?: true
 }
@@ -154,6 +156,7 @@ export type UserProgressGroupByOutputType = {
   quizAnswers: runtime.JsonValue
   recallSelfScores: runtime.JsonValue
   completedMilestones: string[]
+  milestoneNotes: runtime.JsonValue
   updatedAt: Date
   _count: UserProgressCountAggregateOutputType | null
   _min: UserProgressMinAggregateOutputType | null
@@ -185,6 +188,7 @@ export type UserProgressWhereInput = {
   quizAnswers?: Prisma.JsonFilter<"UserProgress">
   recallSelfScores?: Prisma.JsonFilter<"UserProgress">
   completedMilestones?: Prisma.StringNullableListFilter<"UserProgress">
+  milestoneNotes?: Prisma.JsonFilter<"UserProgress">
   updatedAt?: Prisma.DateTimeFilter<"UserProgress"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
@@ -197,6 +201,7 @@ export type UserProgressOrderByWithRelationInput = {
   quizAnswers?: Prisma.SortOrder
   recallSelfScores?: Prisma.SortOrder
   completedMilestones?: Prisma.SortOrder
+  milestoneNotes?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   course?: Prisma.CourseOrderByWithRelationInput
@@ -213,6 +218,7 @@ export type UserProgressWhereUniqueInput = Prisma.AtLeast<{
   quizAnswers?: Prisma.JsonFilter<"UserProgress">
   recallSelfScores?: Prisma.JsonFilter<"UserProgress">
   completedMilestones?: Prisma.StringNullableListFilter<"UserProgress">
+  milestoneNotes?: Prisma.JsonFilter<"UserProgress">
   updatedAt?: Prisma.DateTimeFilter<"UserProgress"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
@@ -225,6 +231,7 @@ export type UserProgressOrderByWithAggregationInput = {
   quizAnswers?: Prisma.SortOrder
   recallSelfScores?: Prisma.SortOrder
   completedMilestones?: Prisma.SortOrder
+  milestoneNotes?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserProgressCountOrderByAggregateInput
   _max?: Prisma.UserProgressMaxOrderByAggregateInput
@@ -241,6 +248,7 @@ export type UserProgressScalarWhereWithAggregatesInput = {
   quizAnswers?: Prisma.JsonWithAggregatesFilter<"UserProgress">
   recallSelfScores?: Prisma.JsonWithAggregatesFilter<"UserProgress">
   completedMilestones?: Prisma.StringNullableListFilter<"UserProgress">
+  milestoneNotes?: Prisma.JsonWithAggregatesFilter<"UserProgress">
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"UserProgress"> | Date | string
 }
 
@@ -249,6 +257,7 @@ export type UserProgressCreateInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutProgressInput
   course: Prisma.CourseCreateNestedOneWithoutProgressInput
@@ -261,6 +270,7 @@ export type UserProgressUncheckedCreateInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
 }
 
@@ -269,6 +279,7 @@ export type UserProgressUpdateInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutProgressNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutProgressNestedInput
@@ -281,6 +292,7 @@ export type UserProgressUncheckedUpdateInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -291,6 +303,7 @@ export type UserProgressCreateManyInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
 }
 
@@ -299,6 +312,7 @@ export type UserProgressUpdateManyMutationInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -309,6 +323,7 @@ export type UserProgressUncheckedUpdateManyInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -342,6 +357,7 @@ export type UserProgressCountOrderByAggregateInput = {
   quizAnswers?: Prisma.SortOrder
   recallSelfScores?: Prisma.SortOrder
   completedMilestones?: Prisma.SortOrder
+  milestoneNotes?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -457,6 +473,7 @@ export type UserProgressCreateWithoutUserInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
   course: Prisma.CourseCreateNestedOneWithoutProgressInput
 }
@@ -467,6 +484,7 @@ export type UserProgressUncheckedCreateWithoutUserInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
 }
 
@@ -506,6 +524,7 @@ export type UserProgressScalarWhereInput = {
   quizAnswers?: Prisma.JsonFilter<"UserProgress">
   recallSelfScores?: Prisma.JsonFilter<"UserProgress">
   completedMilestones?: Prisma.StringNullableListFilter<"UserProgress">
+  milestoneNotes?: Prisma.JsonFilter<"UserProgress">
   updatedAt?: Prisma.DateTimeFilter<"UserProgress"> | Date | string
 }
 
@@ -514,6 +533,7 @@ export type UserProgressCreateWithoutCourseInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutProgressInput
 }
@@ -524,6 +544,7 @@ export type UserProgressUncheckedCreateWithoutCourseInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
 }
 
@@ -559,6 +580,7 @@ export type UserProgressCreateManyUserInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
 }
 
@@ -567,6 +589,7 @@ export type UserProgressUpdateWithoutUserInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneRequiredWithoutProgressNestedInput
 }
@@ -577,6 +600,7 @@ export type UserProgressUncheckedUpdateWithoutUserInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -586,6 +610,7 @@ export type UserProgressUncheckedUpdateManyWithoutUserInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -595,6 +620,7 @@ export type UserProgressCreateManyCourseInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressCreatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
 }
 
@@ -603,6 +629,7 @@ export type UserProgressUpdateWithoutCourseInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutProgressNestedInput
 }
@@ -613,6 +640,7 @@ export type UserProgressUncheckedUpdateWithoutCourseInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -622,6 +650,7 @@ export type UserProgressUncheckedUpdateManyWithoutCourseInput = {
   quizAnswers?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   recallSelfScores?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   completedMilestones?: Prisma.UserProgressUpdatecompletedMilestonesInput | string[]
+  milestoneNotes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -634,6 +663,7 @@ export type UserProgressSelect<ExtArgs extends runtime.Types.Extensions.Internal
   quizAnswers?: boolean
   recallSelfScores?: boolean
   completedMilestones?: boolean
+  milestoneNotes?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -646,6 +676,7 @@ export type UserProgressSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   quizAnswers?: boolean
   recallSelfScores?: boolean
   completedMilestones?: boolean
+  milestoneNotes?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -658,6 +689,7 @@ export type UserProgressSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   quizAnswers?: boolean
   recallSelfScores?: boolean
   completedMilestones?: boolean
+  milestoneNotes?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -670,10 +702,11 @@ export type UserProgressSelectScalar = {
   quizAnswers?: boolean
   recallSelfScores?: boolean
   completedMilestones?: boolean
+  milestoneNotes?: boolean
   updatedAt?: boolean
 }
 
-export type UserProgressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "courseId" | "quizAnswers" | "recallSelfScores" | "completedMilestones" | "updatedAt", ExtArgs["result"]["userProgress"]>
+export type UserProgressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "courseId" | "quizAnswers" | "recallSelfScores" | "completedMilestones" | "milestoneNotes" | "updatedAt", ExtArgs["result"]["userProgress"]>
 export type UserProgressInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -700,6 +733,7 @@ export type $UserProgressPayload<ExtArgs extends runtime.Types.Extensions.Intern
     quizAnswers: runtime.JsonValue
     recallSelfScores: runtime.JsonValue
     completedMilestones: string[]
+    milestoneNotes: runtime.JsonValue
     updatedAt: Date
   }, ExtArgs["result"]["userProgress"]>
   composites: {}
@@ -1132,6 +1166,7 @@ export interface UserProgressFieldRefs {
   readonly quizAnswers: Prisma.FieldRef<"UserProgress", 'Json'>
   readonly recallSelfScores: Prisma.FieldRef<"UserProgress", 'Json'>
   readonly completedMilestones: Prisma.FieldRef<"UserProgress", 'String[]'>
+  readonly milestoneNotes: Prisma.FieldRef<"UserProgress", 'Json'>
   readonly updatedAt: Prisma.FieldRef<"UserProgress", 'DateTime'>
 }
     

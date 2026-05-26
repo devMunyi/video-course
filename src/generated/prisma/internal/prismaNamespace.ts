@@ -1063,6 +1063,7 @@ export const UserProgressScalarFieldEnum = {
   quizAnswers: 'quizAnswers',
   recallSelfScores: 'recallSelfScores',
   completedMilestones: 'completedMilestones',
+  milestoneNotes: 'milestoneNotes',
   updatedAt: 'updatedAt'
 } as const
 
