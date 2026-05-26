@@ -87,7 +87,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="flex flex-col items-center gap-8 px-6 py-28 text-center">
         <Chip color="primary" variant="flat" size="sm" className="px-3">
-          Powered by Claude AI
+          Powered by AI
         </Chip>
         <h1 className="max-w-3xl text-5xl font-bold leading-tight tracking-tight md:text-6xl">
           Turn any YouTube video into an{" "}
@@ -170,7 +170,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-divider px-6 py-6 text-center text-sm text-default-400">
-        © {new Date().getFullYear()} VideoCourse · Built with Claude AI
+        © {new Date().getFullYear()} VideoCourse
       </footer>
     </main>
   )
