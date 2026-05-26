@@ -12,6 +12,7 @@ export const env = createEnv({
     ANTHROPIC_API_KEY: z.string().min(1),
     RESEND_API_KEY: z.string().optional(),
     OWNER_EMAIL: z.string().email(),
+    CRON_SECRET: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url(),
@@ -27,6 +28,7 @@ export const env = createEnv({
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     OWNER_EMAIL: process.env.OWNER_EMAIL,
+    CRON_SECRET: process.env.CRON_SECRET,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
