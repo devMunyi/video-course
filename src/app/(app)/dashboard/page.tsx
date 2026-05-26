@@ -177,37 +177,45 @@ function CourseCard({
   const isReady = course.status === "READY"
 
   return (
-    <Card
-      isPressable={isReady}
-      as={isReady ? Link : undefined}
-      href={`/courses/${course.id}`}
-      className={`overflow-hidden ${!isReady ? "cursor-not-allowed" : ""}`}
-    >
+    <Card className={`overflow-hidden ${!isReady ? "cursor-not-allowed" : ""}`}>
       <CardBody className="gap-3 p-0">
-        <Image
-          src={course.thumbnail}
-          alt={course.title || "Course thumbnail"}
-          className="h-36 w-full object-cover"
-          removeWrapper
-        />
+        {/* Only this area navigates — topic/action area below is non-navigable */}
+        <Link
+          href={`/courses/${course.id}`}
+          className={`block ${!isReady ? "pointer-events-none" : ""}`}
+          tabIndex={isReady ? 0 : -1}
+        >
+          <Image
+            src={course.thumbnail}
+            alt={course.title || "Course thumbnail"}
+            className="h-36 w-full object-cover"
+            removeWrapper
+          />
+        </Link>
         <div className="px-4 pb-4">
-          <div className="mb-1 flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 text-sm font-semibold">
-              {course.title || (
-                <span className="inline-flex items-baseline">
-                  Generating title<AnimatedDots />
-                </span>
-              )}
-            </h3>
-            <Chip
-              size="sm"
-              color={STATUS_COLOR[course.status as keyof typeof STATUS_COLOR]}
-              variant="flat"
-              className="shrink-0"
-            >
-              {STATUS_LABEL[course.status as keyof typeof STATUS_LABEL]}
-            </Chip>
-          </div>
+          <Link
+            href={`/courses/${course.id}`}
+            className={`block ${!isReady ? "pointer-events-none" : ""}`}
+            tabIndex={-1}
+          >
+            <div className="mb-1 flex items-start justify-between gap-2">
+              <h3 className="line-clamp-2 text-sm font-semibold hover:text-primary transition-colors">
+                {course.title || (
+                  <span className="inline-flex items-baseline">
+                    Generating title<AnimatedDots />
+                  </span>
+                )}
+              </h3>
+              <Chip
+                size="sm"
+                color={STATUS_COLOR[course.status as keyof typeof STATUS_COLOR]}
+                variant="flat"
+                className="shrink-0"
+              >
+                {STATUS_LABEL[course.status as keyof typeof STATUS_LABEL]}
+              </Chip>
+            </div>
+          </Link>
 
           {isReady && <TopicLabel course={course} onUpdated={onUpdated} />}
 
