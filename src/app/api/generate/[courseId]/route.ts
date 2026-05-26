@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { db } from "@/server/db"
 import { fetchTranscript } from "@/server/services/youtube"
 import { generateCourse } from "@/server/services/claude"
+import { resolveTopicId } from "@/server/services/topic"
 import type { Prisma } from "@/generated/prisma/client"
 
 // Allow long-running generation (up to 5 min on Vercel)
@@ -22,12 +23,15 @@ export async function POST(
     const transcript = await fetchTranscript(course.videoId)
     const content = await generateCourse(transcript)
 
+    const topicId = content.topic ? await resolveTopicId(content.topic, db) : null
+
     await db.course.update({
       where: { id: courseId },
       data: {
         status: "READY",
         title: content.title,
         description: content.description,
+        topicId,
         content: content as unknown as Prisma.InputJsonValue,
       },
     })

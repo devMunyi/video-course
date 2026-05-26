@@ -3,10 +3,11 @@
 import Link from "next/link"
 import { AnimatedDots } from "@/components/AnimatedDots"
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { Button, Card, CardBody, Chip, Image, Progress } from "@heroui/react"
+import { Button, Card, CardBody, Chip, Image, Input, Progress } from "@heroui/react"
 import { api } from "@/trpc/react"
 import { signOut, useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
@@ -26,6 +27,199 @@ const STATUS_LABEL = {
   FAILED: "Failed",
 }
 
+type Course = {
+  id: string
+  title: string
+  thumbnail: string
+  status: string
+  videoId: string
+  retryCount: number
+  topicId: string | null
+  topic: { id: string; name: string } | null
+  createdAt: Date
+  progress: { completedMilestones: string[] }[]
+  content?: unknown
+}
+
+function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => void }) {
+  const [editing, setEditing] = useState(false)
+  const [customValue, setCustomValue] = useState("")
+
+  const { data: suggestData, isFetching: loadingSuggestions } = api.course.suggestTopics.useQuery(
+    { id: course.id },
+    { enabled: editing, staleTime: Infinity },
+  )
+
+  const updateTopic = api.course.updateTopic.useMutation({
+    onSuccess: () => { onUpdated(); setEditing(false) },
+  })
+
+  function saveById(topicId: string) {
+    updateTopic.mutate({ id: course.id, topicId })
+  }
+
+  function saveByName(name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    updateTopic.mutate({ id: course.id, topicName: trimmed })
+  }
+
+  if (editing) {
+    return (
+      <div className="flex flex-col gap-1.5" onClick={(e) => { e.stopPropagation(); e.preventDefault() }}>
+        {/* Free-form input for custom topics */}
+        <form
+          className="flex items-center gap-1"
+          onSubmit={(e) => { e.preventDefault(); saveByName(customValue) }}
+        >
+          <Input
+            autoFocus
+            size="sm"
+            value={customValue}
+            onValueChange={setCustomValue}
+            placeholder="Type a custom topic…"
+            className="h-7 text-xs"
+            onKeyDown={(e) => e.key === "Escape" && setEditing(false)}
+          />
+          <Button
+            size="sm"
+            type="submit"
+            color="primary"
+            isLoading={updateTopic.isPending}
+            isDisabled={!customValue.trim()}
+            isIconOnly
+            className="h-7 w-7 min-w-0 shrink-0"
+          >
+            ✓
+          </Button>
+        </form>
+
+        {/* AI-suggested chips from DB topics */}
+        <div className="flex flex-wrap gap-1">
+          {loadingSuggestions ? (
+            <span className="text-xs text-default-400">Suggesting<AnimatedDots /></span>
+          ) : suggestData?.suggestions.map((s) => (
+            <button
+              key={s.id}
+              className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary hover:bg-primary/20 transition-colors"
+              onClick={() => saveById(s.id)}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <button
+      className="text-left text-xs text-default-400 hover:text-primary transition-colors"
+      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
+      title="Click to edit topic"
+    >
+      {course.topic?.name ?? "Uncategorised"} ✎
+    </button>
+  )
+}
+
+function CourseCard({
+  course,
+  retryCourse,
+  deleteCourse,
+  onUpdated,
+}: {
+  course: Course
+  retryCourse: ReturnType<typeof api.course.retry.useMutation>
+  deleteCourse: ReturnType<typeof api.course.delete.useMutation>
+  onUpdated: () => void
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const milestoneCount = (course as any).content?.milestones?.length ?? 0
+  const completedCount = course.progress[0]?.completedMilestones?.length ?? 0
+  const pct = milestoneCount > 0 ? Math.round((completedCount / milestoneCount) * 100) : 0
+  const isReady = course.status === "READY"
+
+  return (
+    <Card
+      isPressable={isReady}
+      as={isReady ? Link : undefined}
+      href={`/courses/${course.id}`}
+      className={`overflow-hidden ${!isReady ? "cursor-not-allowed" : ""}`}
+    >
+      <CardBody className="gap-3 p-0">
+        <Image
+          src={course.thumbnail}
+          alt={course.title || "Course thumbnail"}
+          className="h-36 w-full object-cover"
+          removeWrapper
+        />
+        <div className="px-4 pb-4">
+          <div className="mb-1 flex items-start justify-between gap-2">
+            <h3 className="line-clamp-2 text-sm font-semibold">
+              {course.title || (
+                <span className="inline-flex items-baseline">
+                  Generating title<AnimatedDots />
+                </span>
+              )}
+            </h3>
+            <Chip
+              size="sm"
+              color={STATUS_COLOR[course.status as keyof typeof STATUS_COLOR]}
+              variant="flat"
+              className="shrink-0"
+            >
+              {STATUS_LABEL[course.status as keyof typeof STATUS_LABEL]}
+            </Chip>
+          </div>
+
+          {isReady && <TopicLabel course={course} onUpdated={onUpdated} />}
+
+          {isReady && milestoneCount > 0 && (
+            <div className="mt-2">
+              <div className="mb-1 flex justify-between text-xs text-default-500">
+                <span>{completedCount}/{milestoneCount} milestones</span>
+                <span>{pct}%</span>
+              </div>
+              <Progress value={pct} size="sm" color="primary" />
+            </div>
+          )}
+
+          <div className="mt-2 flex items-center justify-between">
+            <p className="text-xs text-default-400">{dayjs(course.createdAt).fromNow()}</p>
+            {!isReady && (
+              <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                {(course.status === "FAILED" || course.status === "PENDING") && (
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    color="primary"
+                    isDisabled={course.retryCount >= 3}
+                    isLoading={retryCourse.isPending && retryCourse.variables?.id === course.id}
+                    onPress={() => retryCourse.mutate({ id: course.id })}
+                    title={course.retryCount >= 3 ? "Max retries reached" : `${3 - course.retryCount} retries left`}
+                  >
+                    Retry {course.retryCount > 0 && `(${3 - course.retryCount} left)`}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="flat"
+                  color="danger"
+                  isLoading={deleteCourse.isPending && deleteCourse.variables?.id === course.id}
+                  onPress={() => deleteCourse.mutate({ id: course.id })}
+                >
+                  Delete
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  )
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const { data: session } = useSession()
@@ -39,9 +233,21 @@ export default function DashboardPage() {
     router.push("/")
   }
 
+  // Group by topic name, "Uncategorised" for courses without one
+  const grouped = (courses ?? []).reduce<Record<string, Course[]>>((acc, course) => {
+    const key = course.topic?.name ?? "Uncategorised"
+    acc[key] = [...(acc[key] ?? []), course as Course]
+    return acc
+  }, {})
+
+  const sortedGroups = Object.entries(grouped).sort(([a], [b]) => {
+    if (a === "Uncategorised") return 1
+    if (b === "Uncategorised") return -1
+    return a.localeCompare(b)
+  })
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Navbar */}
       <nav className="flex items-center justify-between border-b border-divider px-6 py-4">
         <Link href="/dashboard" className="text-xl font-bold text-primary">
           VideoCourse
@@ -92,92 +298,29 @@ export default function DashboardPage() {
         )}
 
         {!isLoading && courses && courses.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => {
-              const milestoneCount =
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (course as any).content?.milestones?.length ?? 0
-              const completedCount = course.progress[0]?.completedMilestones?.length ?? 0
-              const pct = milestoneCount > 0 ? Math.round((completedCount / milestoneCount) * 100) : 0
-
-              const isReady = course.status === "READY"
-
-              return (
-                <Card
-                  key={course.id}
-                  isPressable={isReady}
-                  as={isReady ? Link : undefined}
-                  href={`/courses/${course.id}`}
-                  className={`overflow-hidden ${!isReady ? "cursor-not-allowed" : ""}`}
-                >
-                  <CardBody className="gap-3 p-0">
-                    <Image
-                      src={course.thumbnail}
-                      alt={course.title || "Course thumbnail"}
-                      className="h-36 w-full object-cover"
-                      removeWrapper
+          <div className="flex flex-col gap-10">
+            {sortedGroups.map(([topicName, topicCourses]) => (
+              <section key={topicName}>
+                <div className="mb-4 flex items-center gap-3">
+                  <h2 className="text-base font-semibold">{topicName}</h2>
+                  <span className="rounded-full bg-default-100 px-2 py-0.5 text-xs text-default-500">
+                    {topicCourses.length}
+                  </span>
+                  <div className="h-px flex-1 bg-divider" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {topicCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      retryCourse={retryCourse}
+                      deleteCourse={deleteCourse}
+                      onUpdated={refetch}
                     />
-                    <div className="px-4 pb-4">
-                      <div className="mb-1 flex items-start justify-between gap-2">
-                        <h3 className="line-clamp-2 text-sm font-semibold">
-                          {course.title || (
-                            <span className="inline-flex items-baseline">
-                              Generating title<AnimatedDots />
-                            </span>
-                          )}
-                        </h3>
-                        <Chip
-                          size="sm"
-                          color={STATUS_COLOR[course.status as keyof typeof STATUS_COLOR]}
-                          variant="flat"
-                          className="shrink-0"
-                        >
-                          {STATUS_LABEL[course.status as keyof typeof STATUS_LABEL]}
-                        </Chip>
-                      </div>
-                      {isReady && milestoneCount > 0 && (
-                        <div className="mt-2">
-                          <div className="mb-1 flex justify-between text-xs text-default-500">
-                            <span>{completedCount}/{milestoneCount} milestones</span>
-                            <span>{pct}%</span>
-                          </div>
-                          <Progress value={pct} size="sm" color="primary" />
-                        </div>
-                      )}
-                      <div className="mt-2 flex items-center justify-between">
-                        <p className="text-xs text-default-400">{dayjs(course.createdAt).fromNow()}</p>
-                        {!isReady && (
-                          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                            {(course.status === "FAILED" || course.status === "PENDING") && (
-                              <Button
-                                size="sm"
-                                variant="flat"
-                                color="primary"
-                                isDisabled={course.retryCount >= 3}
-                                isLoading={retryCourse.isPending && retryCourse.variables?.id === course.id}
-                                onPress={() => retryCourse.mutate({ id: course.id })}
-                                title={course.retryCount >= 3 ? "Max retries reached" : `${3 - course.retryCount} retries left`}
-                              >
-                                Retry {course.retryCount > 0 && `(${3 - course.retryCount} left)`}
-                              </Button>
-                            )}
-                            <Button
-                              size="sm"
-                              variant="flat"
-                              color="danger"
-                              isLoading={deleteCourse.isPending && deleteCourse.variables?.id === course.id}
-                              onPress={() => deleteCourse.mutate({ id: course.id })}
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              )
-            })}
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         )}
       </main>

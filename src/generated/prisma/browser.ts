@@ -38,6 +38,11 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
+ * Model Topic
+ * 
+ */
+export type Topic = Prisma.TopicModel
+/**
  * Model Course
  * 
  */

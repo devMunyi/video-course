@@ -20,8 +20,18 @@ export type CourseModel = runtime.Types.Result.DefaultSelection<Prisma.$CoursePa
 
 export type AggregateCourse = {
   _count: CourseCountAggregateOutputType | null
+  _avg: CourseAvgAggregateOutputType | null
+  _sum: CourseSumAggregateOutputType | null
   _min: CourseMinAggregateOutputType | null
   _max: CourseMaxAggregateOutputType | null
+}
+
+export type CourseAvgAggregateOutputType = {
+  retryCount: number | null
+}
+
+export type CourseSumAggregateOutputType = {
+  retryCount: number | null
 }
 
 export type CourseMinAggregateOutputType = {
@@ -34,6 +44,8 @@ export type CourseMinAggregateOutputType = {
   thumbnail: string | null
   status: $Enums.CourseStatus | null
   errorMsg: string | null
+  retryCount: number | null
+  topicId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +60,8 @@ export type CourseMaxAggregateOutputType = {
   thumbnail: string | null
   status: $Enums.CourseStatus | null
   errorMsg: string | null
+  retryCount: number | null
+  topicId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,11 +77,21 @@ export type CourseCountAggregateOutputType = {
   status: number
   content: number
   errorMsg: number
+  retryCount: number
+  topicId: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type CourseAvgAggregateInputType = {
+  retryCount?: true
+}
+
+export type CourseSumAggregateInputType = {
+  retryCount?: true
+}
 
 export type CourseMinAggregateInputType = {
   id?: true
@@ -79,6 +103,8 @@ export type CourseMinAggregateInputType = {
   thumbnail?: true
   status?: true
   errorMsg?: true
+  retryCount?: true
+  topicId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -93,6 +119,8 @@ export type CourseMaxAggregateInputType = {
   thumbnail?: true
   status?: true
   errorMsg?: true
+  retryCount?: true
+  topicId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -108,6 +136,8 @@ export type CourseCountAggregateInputType = {
   status?: true
   content?: true
   errorMsg?: true
+  retryCount?: true
+  topicId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +181,18 @@ export type CourseAggregateArgs<ExtArgs extends runtime.Types.Extensions.Interna
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: CourseAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: CourseSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: CourseMinAggregateInputType
@@ -181,6 +223,8 @@ export type CourseGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   _count?: CourseCountAggregateInputType | true
+  _avg?: CourseAvgAggregateInputType
+  _sum?: CourseSumAggregateInputType
   _min?: CourseMinAggregateInputType
   _max?: CourseMaxAggregateInputType
 }
@@ -196,9 +240,13 @@ export type CourseGroupByOutputType = {
   status: $Enums.CourseStatus
   content: runtime.JsonValue | null
   errorMsg: string | null
+  retryCount: number
+  topicId: string | null
   createdAt: Date
   updatedAt: Date
   _count: CourseCountAggregateOutputType | null
+  _avg: CourseAvgAggregateOutputType | null
+  _sum: CourseSumAggregateOutputType | null
   _min: CourseMinAggregateOutputType | null
   _max: CourseMaxAggregateOutputType | null
 }
@@ -232,9 +280,12 @@ export type CourseWhereInput = {
   status?: Prisma.EnumCourseStatusFilter<"Course"> | $Enums.CourseStatus
   content?: Prisma.JsonNullableFilter<"Course">
   errorMsg?: Prisma.StringNullableFilter<"Course"> | string | null
+  retryCount?: Prisma.IntFilter<"Course"> | number
+  topicId?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  topic?: Prisma.XOR<Prisma.TopicNullableScalarRelationFilter, Prisma.TopicWhereInput> | null
   progress?: Prisma.UserProgressListRelationFilter
 }
 
@@ -249,9 +300,12 @@ export type CourseOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   content?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMsg?: Prisma.SortOrderInput | Prisma.SortOrder
+  retryCount?: Prisma.SortOrder
+  topicId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  topic?: Prisma.TopicOrderByWithRelationInput
   progress?: Prisma.UserProgressOrderByRelationAggregateInput
 }
 
@@ -269,9 +323,12 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumCourseStatusFilter<"Course"> | $Enums.CourseStatus
   content?: Prisma.JsonNullableFilter<"Course">
   errorMsg?: Prisma.StringNullableFilter<"Course"> | string | null
+  retryCount?: Prisma.IntFilter<"Course"> | number
+  topicId?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  topic?: Prisma.XOR<Prisma.TopicNullableScalarRelationFilter, Prisma.TopicWhereInput> | null
   progress?: Prisma.UserProgressListRelationFilter
 }, "id">
 
@@ -286,11 +343,15 @@ export type CourseOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   content?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMsg?: Prisma.SortOrderInput | Prisma.SortOrder
+  retryCount?: Prisma.SortOrder
+  topicId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CourseCountOrderByAggregateInput
+  _avg?: Prisma.CourseAvgOrderByAggregateInput
   _max?: Prisma.CourseMaxOrderByAggregateInput
   _min?: Prisma.CourseMinOrderByAggregateInput
+  _sum?: Prisma.CourseSumOrderByAggregateInput
 }
 
 export type CourseScalarWhereWithAggregatesInput = {
@@ -307,6 +368,8 @@ export type CourseScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumCourseStatusWithAggregatesFilter<"Course"> | $Enums.CourseStatus
   content?: Prisma.JsonNullableWithAggregatesFilter<"Course">
   errorMsg?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  retryCount?: Prisma.IntWithAggregatesFilter<"Course"> | number
+  topicId?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
 }
@@ -321,9 +384,11 @@ export type CourseCreateInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCoursesInput
+  topic?: Prisma.TopicCreateNestedOneWithoutCoursesInput
   progress?: Prisma.UserProgressCreateNestedManyWithoutCourseInput
 }
 
@@ -338,6 +403,8 @@ export type CourseUncheckedCreateInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
+  topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   progress?: Prisma.UserProgressUncheckedCreateNestedManyWithoutCourseInput
@@ -353,9 +420,11 @@ export type CourseUpdateInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCoursesNestedInput
+  topic?: Prisma.TopicUpdateOneWithoutCoursesNestedInput
   progress?: Prisma.UserProgressUpdateManyWithoutCourseNestedInput
 }
 
@@ -370,6 +439,8 @@ export type CourseUncheckedUpdateInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progress?: Prisma.UserProgressUncheckedUpdateManyWithoutCourseNestedInput
@@ -386,6 +457,8 @@ export type CourseCreateManyInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
+  topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -400,6 +473,7 @@ export type CourseUpdateManyMutationInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -415,6 +489,8 @@ export type CourseUncheckedUpdateManyInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -440,8 +516,14 @@ export type CourseCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   content?: Prisma.SortOrder
   errorMsg?: Prisma.SortOrder
+  retryCount?: Prisma.SortOrder
+  topicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type CourseAvgOrderByAggregateInput = {
+  retryCount?: Prisma.SortOrder
 }
 
 export type CourseMaxOrderByAggregateInput = {
@@ -454,6 +536,8 @@ export type CourseMaxOrderByAggregateInput = {
   thumbnail?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMsg?: Prisma.SortOrder
+  retryCount?: Prisma.SortOrder
+  topicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -468,8 +552,14 @@ export type CourseMinOrderByAggregateInput = {
   thumbnail?: Prisma.SortOrder
   status?: Prisma.SortOrder
   errorMsg?: Prisma.SortOrder
+  retryCount?: Prisma.SortOrder
+  topicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type CourseSumOrderByAggregateInput = {
+  retryCount?: Prisma.SortOrder
 }
 
 export type CourseScalarRelationFilter = {
@@ -519,8 +609,58 @@ export type CourseUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.CourseScalarWhereInput | Prisma.CourseScalarWhereInput[]
 }
 
+export type CourseCreateNestedManyWithoutTopicInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutTopicInput, Prisma.CourseUncheckedCreateWithoutTopicInput> | Prisma.CourseCreateWithoutTopicInput[] | Prisma.CourseUncheckedCreateWithoutTopicInput[]
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutTopicInput | Prisma.CourseCreateOrConnectWithoutTopicInput[]
+  createMany?: Prisma.CourseCreateManyTopicInputEnvelope
+  connect?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+}
+
+export type CourseUncheckedCreateNestedManyWithoutTopicInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutTopicInput, Prisma.CourseUncheckedCreateWithoutTopicInput> | Prisma.CourseCreateWithoutTopicInput[] | Prisma.CourseUncheckedCreateWithoutTopicInput[]
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutTopicInput | Prisma.CourseCreateOrConnectWithoutTopicInput[]
+  createMany?: Prisma.CourseCreateManyTopicInputEnvelope
+  connect?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+}
+
+export type CourseUpdateManyWithoutTopicNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutTopicInput, Prisma.CourseUncheckedCreateWithoutTopicInput> | Prisma.CourseCreateWithoutTopicInput[] | Prisma.CourseUncheckedCreateWithoutTopicInput[]
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutTopicInput | Prisma.CourseCreateOrConnectWithoutTopicInput[]
+  upsert?: Prisma.CourseUpsertWithWhereUniqueWithoutTopicInput | Prisma.CourseUpsertWithWhereUniqueWithoutTopicInput[]
+  createMany?: Prisma.CourseCreateManyTopicInputEnvelope
+  set?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  disconnect?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  delete?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  connect?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  update?: Prisma.CourseUpdateWithWhereUniqueWithoutTopicInput | Prisma.CourseUpdateWithWhereUniqueWithoutTopicInput[]
+  updateMany?: Prisma.CourseUpdateManyWithWhereWithoutTopicInput | Prisma.CourseUpdateManyWithWhereWithoutTopicInput[]
+  deleteMany?: Prisma.CourseScalarWhereInput | Prisma.CourseScalarWhereInput[]
+}
+
+export type CourseUncheckedUpdateManyWithoutTopicNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutTopicInput, Prisma.CourseUncheckedCreateWithoutTopicInput> | Prisma.CourseCreateWithoutTopicInput[] | Prisma.CourseUncheckedCreateWithoutTopicInput[]
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutTopicInput | Prisma.CourseCreateOrConnectWithoutTopicInput[]
+  upsert?: Prisma.CourseUpsertWithWhereUniqueWithoutTopicInput | Prisma.CourseUpsertWithWhereUniqueWithoutTopicInput[]
+  createMany?: Prisma.CourseCreateManyTopicInputEnvelope
+  set?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  disconnect?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  delete?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  connect?: Prisma.CourseWhereUniqueInput | Prisma.CourseWhereUniqueInput[]
+  update?: Prisma.CourseUpdateWithWhereUniqueWithoutTopicInput | Prisma.CourseUpdateWithWhereUniqueWithoutTopicInput[]
+  updateMany?: Prisma.CourseUpdateManyWithWhereWithoutTopicInput | Prisma.CourseUpdateManyWithWhereWithoutTopicInput[]
+  deleteMany?: Prisma.CourseScalarWhereInput | Prisma.CourseScalarWhereInput[]
+}
+
 export type EnumCourseStatusFieldUpdateOperationsInput = {
   set?: $Enums.CourseStatus
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type CourseCreateNestedOneWithoutProgressInput = {
@@ -547,8 +687,10 @@ export type CourseCreateWithoutUserInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  topic?: Prisma.TopicCreateNestedOneWithoutCoursesInput
   progress?: Prisma.UserProgressCreateNestedManyWithoutCourseInput
 }
 
@@ -562,6 +704,8 @@ export type CourseUncheckedCreateWithoutUserInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
+  topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   progress?: Prisma.UserProgressUncheckedCreateNestedManyWithoutCourseInput
@@ -607,8 +751,70 @@ export type CourseScalarWhereInput = {
   status?: Prisma.EnumCourseStatusFilter<"Course"> | $Enums.CourseStatus
   content?: Prisma.JsonNullableFilter<"Course">
   errorMsg?: Prisma.StringNullableFilter<"Course"> | string | null
+  retryCount?: Prisma.IntFilter<"Course"> | number
+  topicId?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
+}
+
+export type CourseCreateWithoutTopicInput = {
+  id?: string
+  youtubeUrl: string
+  videoId: string
+  title?: string
+  description?: string
+  thumbnail?: string
+  status?: $Enums.CourseStatus
+  content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  errorMsg?: string | null
+  retryCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutCoursesInput
+  progress?: Prisma.UserProgressCreateNestedManyWithoutCourseInput
+}
+
+export type CourseUncheckedCreateWithoutTopicInput = {
+  id?: string
+  userId: string
+  youtubeUrl: string
+  videoId: string
+  title?: string
+  description?: string
+  thumbnail?: string
+  status?: $Enums.CourseStatus
+  content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  errorMsg?: string | null
+  retryCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  progress?: Prisma.UserProgressUncheckedCreateNestedManyWithoutCourseInput
+}
+
+export type CourseCreateOrConnectWithoutTopicInput = {
+  where: Prisma.CourseWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseCreateWithoutTopicInput, Prisma.CourseUncheckedCreateWithoutTopicInput>
+}
+
+export type CourseCreateManyTopicInputEnvelope = {
+  data: Prisma.CourseCreateManyTopicInput | Prisma.CourseCreateManyTopicInput[]
+  skipDuplicates?: boolean
+}
+
+export type CourseUpsertWithWhereUniqueWithoutTopicInput = {
+  where: Prisma.CourseWhereUniqueInput
+  update: Prisma.XOR<Prisma.CourseUpdateWithoutTopicInput, Prisma.CourseUncheckedUpdateWithoutTopicInput>
+  create: Prisma.XOR<Prisma.CourseCreateWithoutTopicInput, Prisma.CourseUncheckedCreateWithoutTopicInput>
+}
+
+export type CourseUpdateWithWhereUniqueWithoutTopicInput = {
+  where: Prisma.CourseWhereUniqueInput
+  data: Prisma.XOR<Prisma.CourseUpdateWithoutTopicInput, Prisma.CourseUncheckedUpdateWithoutTopicInput>
+}
+
+export type CourseUpdateManyWithWhereWithoutTopicInput = {
+  where: Prisma.CourseScalarWhereInput
+  data: Prisma.XOR<Prisma.CourseUpdateManyMutationInput, Prisma.CourseUncheckedUpdateManyWithoutTopicInput>
 }
 
 export type CourseCreateWithoutProgressInput = {
@@ -621,9 +827,11 @@ export type CourseCreateWithoutProgressInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCoursesInput
+  topic?: Prisma.TopicCreateNestedOneWithoutCoursesInput
 }
 
 export type CourseUncheckedCreateWithoutProgressInput = {
@@ -637,6 +845,8 @@ export type CourseUncheckedCreateWithoutProgressInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
+  topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -667,9 +877,11 @@ export type CourseUpdateWithoutProgressInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCoursesNestedInput
+  topic?: Prisma.TopicUpdateOneWithoutCoursesNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutProgressInput = {
@@ -683,6 +895,8 @@ export type CourseUncheckedUpdateWithoutProgressInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -697,6 +911,8 @@ export type CourseCreateManyUserInput = {
   status?: $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
+  retryCount?: number
+  topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -711,8 +927,10 @@ export type CourseUpdateWithoutUserInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topic?: Prisma.TopicUpdateOneWithoutCoursesNestedInput
   progress?: Prisma.UserProgressUpdateManyWithoutCourseNestedInput
 }
 
@@ -726,6 +944,8 @@ export type CourseUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progress?: Prisma.UserProgressUncheckedUpdateManyWithoutCourseNestedInput
@@ -741,6 +961,74 @@ export type CourseUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CourseCreateManyTopicInput = {
+  id?: string
+  userId: string
+  youtubeUrl: string
+  videoId: string
+  title?: string
+  description?: string
+  thumbnail?: string
+  status?: $Enums.CourseStatus
+  content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  errorMsg?: string | null
+  retryCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CourseUpdateWithoutTopicInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  youtubeUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  videoId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnail?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
+  content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutCoursesNestedInput
+  progress?: Prisma.UserProgressUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseUncheckedUpdateWithoutTopicInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  youtubeUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  videoId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnail?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
+  content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  progress?: Prisma.UserProgressUncheckedUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseUncheckedUpdateManyWithoutTopicInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  youtubeUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  videoId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnail?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus
+  content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retryCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -787,9 +1075,12 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   status?: boolean
   content?: boolean
   errorMsg?: boolean
+  retryCount?: boolean
+  topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
   progress?: boolean | Prisma.Course$progressArgs<ExtArgs>
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["course"]>
@@ -805,9 +1096,12 @@ export type CourseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   status?: boolean
   content?: boolean
   errorMsg?: boolean
+  retryCount?: boolean
+  topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
 }, ExtArgs["result"]["course"]>
 
 export type CourseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -821,9 +1115,12 @@ export type CourseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   status?: boolean
   content?: boolean
   errorMsg?: boolean
+  retryCount?: boolean
+  topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
 }, ExtArgs["result"]["course"]>
 
 export type CourseSelectScalar = {
@@ -837,27 +1134,33 @@ export type CourseSelectScalar = {
   status?: boolean
   content?: boolean
   errorMsg?: boolean
+  retryCount?: boolean
+  topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "youtubeUrl" | "videoId" | "title" | "description" | "thumbnail" | "status" | "content" | "errorMsg" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
+export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "youtubeUrl" | "videoId" | "title" | "description" | "thumbnail" | "status" | "content" | "errorMsg" | "retryCount" | "topicId" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
 export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
   progress?: boolean | Prisma.Course$progressArgs<ExtArgs>
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CourseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
 }
 export type CourseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
 }
 
 export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Course"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    topic: Prisma.$TopicPayload<ExtArgs> | null
     progress: Prisma.$UserProgressPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -871,6 +1174,8 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     status: $Enums.CourseStatus
     content: runtime.JsonValue | null
     errorMsg: string | null
+    retryCount: number
+    topicId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["course"]>
@@ -1268,6 +1573,7 @@ readonly fields: CourseFieldRefs;
 export interface Prisma__CourseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  topic<T extends Prisma.Course$topicArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$topicArgs<ExtArgs>>): Prisma.Prisma__TopicClient<runtime.Types.Result.GetResult<Prisma.$TopicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   progress<T extends Prisma.Course$progressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$progressArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1308,6 +1614,8 @@ export interface CourseFieldRefs {
   readonly status: Prisma.FieldRef<"Course", 'CourseStatus'>
   readonly content: Prisma.FieldRef<"Course", 'Json'>
   readonly errorMsg: Prisma.FieldRef<"Course", 'String'>
+  readonly retryCount: Prisma.FieldRef<"Course", 'Int'>
+  readonly topicId: Prisma.FieldRef<"Course", 'String'>
   readonly createdAt: Prisma.FieldRef<"Course", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Course", 'DateTime'>
 }
@@ -1703,6 +2011,25 @@ export type CourseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Courses to delete.
    */
   limit?: number
+}
+
+/**
+ * Course.topic
+ */
+export type Course$topicArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Topic
+   */
+  select?: Prisma.TopicSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Topic
+   */
+  omit?: Prisma.TopicOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TopicInclude<ExtArgs> | null
+  where?: Prisma.TopicWhereInput
 }
 
 /**

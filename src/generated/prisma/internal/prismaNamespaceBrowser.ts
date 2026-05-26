@@ -55,6 +55,7 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
+  Topic: 'Topic',
   Course: 'Course',
   UserProgress: 'UserProgress'
 } as const
@@ -134,6 +135,15 @@ export const VerificationScalarFieldEnum = {
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
+export const TopicScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt'
+} as const
+
+export type TopicScalarFieldEnum = (typeof TopicScalarFieldEnum)[keyof typeof TopicScalarFieldEnum]
+
+
 export const CourseScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -145,6 +155,8 @@ export const CourseScalarFieldEnum = {
   status: 'status',
   content: 'content',
   errorMsg: 'errorMsg',
+  retryCount: 'retryCount',
+  topicId: 'topicId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

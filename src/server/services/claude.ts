@@ -40,6 +40,7 @@ const MilestoneSchema = z.object({
 export const CourseContentSchema = z.object({
   title: z.string(),
   description: z.string(),
+  topic: z.string(),
   milestones: z.array(MilestoneSchema).min(2).max(8),
   summary: z.string(),
 })
@@ -60,6 +61,7 @@ Return ONLY a JSON object with this exact structure:
 {
   "title": "string",
   "description": "2-3 sentence overview of what learners will gain",
+  "topic": "1-3 word label describing the subject area (e.g. 'Forex Trading', 'Laravel Security', 'Guitar Basics')",
   "milestones": [
     {
       "id": "milestone-1",

@@ -15,6 +15,7 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:prod": "prisma migrate deploy",
     "db:push": "prisma db push",
+    "db:seed": "bun prisma/seed.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {
