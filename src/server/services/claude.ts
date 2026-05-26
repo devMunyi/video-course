@@ -106,10 +106,14 @@ Rules:
 export async function generateCourse(transcript: string): Promise<CourseContent> {
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 8096,
+    max_tokens: 16000,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: USER_PROMPT(transcript) }],
   })
+
+  if (message.stop_reason === "max_tokens") {
+    throw new Error("Course generation exceeded token limit — try a shorter video")
+  }
 
   const raw = message.content[0]
   if (raw.type !== "text") throw new Error("Unexpected response type from Claude")
