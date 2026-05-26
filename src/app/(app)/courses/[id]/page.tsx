@@ -14,6 +14,8 @@ import ActiveRecall from "@/components/course/ActiveRecall"
 import Quiz from "@/components/course/Quiz"
 import MilestoneSidebar from "@/components/course/MilestoneSidebar"
 import MilestoneNotes from "@/components/course/MilestoneNotes"
+import CompletionCertificate from "@/components/course/CompletionCertificate"
+import { useSession } from "@/lib/auth-client"
 import toast from "react-hot-toast"
 
 const POLL_INTERVAL = 3000
@@ -70,6 +72,8 @@ export default function CoursePage() {
   const router = useRouter()
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+  const [showCertificate, setShowCertificate] = useState(false)
+  const { data: session } = useSession()
 
   const utils = api.useUtils()
 
@@ -172,7 +176,7 @@ export default function CoursePage() {
       setCurrentMilestoneIndex((i) => i + 1)
       window.scrollTo({ top: 0, behavior: "smooth" })
     } else {
-      toast.success("🎉 Course complete!")
+      setShowCertificate(true)
     }
   }, [currentMilestone, completedMilestones, id, upsertProgress, currentMilestoneIndex, milestones.length])
 
@@ -279,8 +283,11 @@ export default function CoursePage() {
           />
 
           {totalPct === 100 && (
-            <div className="mt-6 rounded-xl bg-success-50 p-4 text-center text-sm text-success-700">
+            <div className="mt-6 flex flex-col items-center gap-2 rounded-xl bg-success-50 p-4 text-center text-sm text-success-700">
               🎉 Course complete!
+              <Button size="sm" color="success" variant="flat" onPress={() => setShowCertificate(true)}>
+                View Certificate
+              </Button>
             </div>
           )}
         </div>
@@ -410,6 +417,15 @@ export default function CoursePage() {
           </svg>
         </button>
       </div>
+
+      {/* Completion certificate */}
+      <CompletionCertificate
+        isOpen={showCertificate}
+        onClose={() => setShowCertificate(false)}
+        courseTitle={course.title}
+        userName={session?.user.name ?? "Student"}
+        completedAt={new Date()}
+      />
 
       {/* Mobile milestone drawer */}
       <Drawer
