@@ -11,6 +11,7 @@ export const progressRouter = createTRPCRouter({
         recallSelfScores: z.record(z.string(), z.string()).optional(),
         completedMilestones: z.array(z.string()).optional(),
         milestoneNotes: z.record(z.string(), z.string()).optional(),
+        recallReviewDates: z.record(z.string(), z.string().nullable()).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -37,6 +38,15 @@ export const progressRouter = createTRPCRouter({
         ]),
       ]
 
+      // Merge review dates: null value means remove that key (question mastered)
+      const baseReviewDates = (existing?.recallReviewDates as Record<string, string> ?? {})
+      const mergedReviewDates: Prisma.InputJsonValue = input.recallReviewDates
+        ? Object.fromEntries(
+            Object.entries({ ...baseReviewDates, ...input.recallReviewDates })
+              .filter(([, v]) => v !== null)
+          )
+        : baseReviewDates
+
       return ctx.db.userProgress.upsert({
         where: { userId_courseId: { userId: ctx.session.user.id, courseId: input.courseId } },
         create: {
@@ -46,12 +56,14 @@ export const progressRouter = createTRPCRouter({
           recallSelfScores: (input.recallSelfScores ?? {}) as Prisma.InputJsonValue,
           completedMilestones: input.completedMilestones ?? [],
           milestoneNotes: (input.milestoneNotes ?? {}) as Prisma.InputJsonValue,
+          recallReviewDates: {} as Prisma.InputJsonValue,
         },
         update: {
           ...(input.quizAnswers && { quizAnswers: mergedQuiz }),
           ...(input.recallSelfScores && { recallSelfScores: mergedRecall }),
           ...(input.completedMilestones && { completedMilestones: mergedMilestones }),
           ...(input.milestoneNotes && { milestoneNotes: mergedNotes }),
+          ...(input.recallReviewDates && { recallReviewDates: mergedReviewDates }),
         },
       })
     }),

@@ -94,6 +94,7 @@ export default function CoursePage() {
   const quizAnswers = (progress?.quizAnswers ?? {}) as Record<string, string>
   const recallScores = (progress?.recallSelfScores ?? {}) as Record<string, string>
   const milestoneNotes = (progress?.milestoneNotes ?? {}) as Record<string, string>
+  const recallReviewDates = (progress?.recallReviewDates ?? {}) as Record<string, string>
 
   const currentMilestone = milestones[currentMilestoneIndex]
 
@@ -104,12 +105,21 @@ export default function CoursePage() {
 
   const handleRecallScore = useCallback(
     (questionId: string, score: "got_it" | "review") => {
+      let reviewDate: string | null = null
+      if (score === "review") {
+        // Due in 24 hours
+        reviewDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      } else if (recallReviewDates[questionId]) {
+        // Was in review queue and now got it → graduate to 7 days
+        reviewDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      }
       upsertProgress.mutate({
         courseId: id,
         recallSelfScores: { [questionId]: score },
+        recallReviewDates: { [questionId]: reviewDate },
       })
     },
-    [id, upsertProgress],
+    [id, upsertProgress, recallReviewDates],
   )
 
   const handleQuizAnswer = useCallback(

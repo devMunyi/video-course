@@ -268,6 +268,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const { data: session } = useSession()
   const { data: courses, isLoading, refetch } = api.course.list.useQuery()
+  const { data: reviewCount = 0 } = api.review.getCount.useQuery()
 
   const retryCourse = api.course.retry.useMutation({ onSuccess: () => refetch() })
   const deleteCourse = api.course.delete.useMutation({ onSuccess: () => refetch() })
@@ -297,6 +298,14 @@ export default function DashboardPage() {
           VideoCourse
         </Link>
         <div className="flex items-center gap-3">
+          {reviewCount > 0 && (
+            <Button as={Link} href="/review" size="sm" color="warning" variant="flat" className="gap-1.5">
+              📌 Review
+              <span className="flex size-4 items-center justify-center rounded-full bg-warning text-[10px] font-bold text-white">
+                {reviewCount}
+              </span>
+            </Button>
+          )}
           <ThemeToggle />
           <Dropdown placement="bottom-end">
             <DropdownTrigger>

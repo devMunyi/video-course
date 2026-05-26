@@ -102,6 +102,7 @@ model UserProgress {
   course              Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   quizAnswers         Json     @default("{}")
   recallSelfScores    Json     @default("{}")
+  recallReviewDates   Json     @default("{}")
   completedMilestones String[] @default([])
   milestoneNotes      Json     @default("{}")
   updatedAt           DateTime @updatedAt
