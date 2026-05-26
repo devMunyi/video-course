@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button, Chip, Drawer, DrawerBody, DrawerContent, DrawerHeader, Progress, Spinner } from "@heroui/react"
@@ -118,6 +118,26 @@ export default function CoursePage() {
   const recallReviewDates = (progress?.recallReviewDates ?? {}) as Record<string, string>
 
   const currentMilestone = milestones[currentMilestoneIndex]
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement).isContentEditable) return
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        setCurrentMilestoneIndex((i) => {
+          if (i < milestones.length - 1) { window.scrollTo({ top: 0, behavior: "smooth" }); return i + 1 }
+          return i
+        })
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        setCurrentMilestoneIndex((i) => {
+          if (i > 0) { window.scrollTo({ top: 0, behavior: "smooth" }); return i - 1 }
+          return i
+        })
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [milestones.length])
 
   const totalPct =
     milestones.length > 0
