@@ -87,6 +87,7 @@ model Course {
   content     Json?
   errorMsg    String?
   retryCount  Int          @default(0)
+  isPublic    Boolean      @default(false)
   topicId     String?
   topic       Topic?       @relation(fields: [topicId], references: [id])
   createdAt   DateTime     @default(now())

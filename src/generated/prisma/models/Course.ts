@@ -45,6 +45,7 @@ export type CourseMinAggregateOutputType = {
   status: $Enums.CourseStatus | null
   errorMsg: string | null
   retryCount: number | null
+  isPublic: boolean | null
   topicId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +62,7 @@ export type CourseMaxAggregateOutputType = {
   status: $Enums.CourseStatus | null
   errorMsg: string | null
   retryCount: number | null
+  isPublic: boolean | null
   topicId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -78,6 +80,7 @@ export type CourseCountAggregateOutputType = {
   content: number
   errorMsg: number
   retryCount: number
+  isPublic: number
   topicId: number
   createdAt: number
   updatedAt: number
@@ -104,6 +107,7 @@ export type CourseMinAggregateInputType = {
   status?: true
   errorMsg?: true
   retryCount?: true
+  isPublic?: true
   topicId?: true
   createdAt?: true
   updatedAt?: true
@@ -120,6 +124,7 @@ export type CourseMaxAggregateInputType = {
   status?: true
   errorMsg?: true
   retryCount?: true
+  isPublic?: true
   topicId?: true
   createdAt?: true
   updatedAt?: true
@@ -137,6 +142,7 @@ export type CourseCountAggregateInputType = {
   content?: true
   errorMsg?: true
   retryCount?: true
+  isPublic?: true
   topicId?: true
   createdAt?: true
   updatedAt?: true
@@ -241,6 +247,7 @@ export type CourseGroupByOutputType = {
   content: runtime.JsonValue | null
   errorMsg: string | null
   retryCount: number
+  isPublic: boolean
   topicId: string | null
   createdAt: Date
   updatedAt: Date
@@ -281,6 +288,7 @@ export type CourseWhereInput = {
   content?: Prisma.JsonNullableFilter<"Course">
   errorMsg?: Prisma.StringNullableFilter<"Course"> | string | null
   retryCount?: Prisma.IntFilter<"Course"> | number
+  isPublic?: Prisma.BoolFilter<"Course"> | boolean
   topicId?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
@@ -301,6 +309,7 @@ export type CourseOrderByWithRelationInput = {
   content?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMsg?: Prisma.SortOrderInput | Prisma.SortOrder
   retryCount?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   topicId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -324,6 +333,7 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.JsonNullableFilter<"Course">
   errorMsg?: Prisma.StringNullableFilter<"Course"> | string | null
   retryCount?: Prisma.IntFilter<"Course"> | number
+  isPublic?: Prisma.BoolFilter<"Course"> | boolean
   topicId?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
@@ -344,6 +354,7 @@ export type CourseOrderByWithAggregationInput = {
   content?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMsg?: Prisma.SortOrderInput | Prisma.SortOrder
   retryCount?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   topicId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -369,6 +380,7 @@ export type CourseScalarWhereWithAggregatesInput = {
   content?: Prisma.JsonNullableWithAggregatesFilter<"Course">
   errorMsg?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
   retryCount?: Prisma.IntWithAggregatesFilter<"Course"> | number
+  isPublic?: Prisma.BoolWithAggregatesFilter<"Course"> | boolean
   topicId?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
@@ -385,6 +397,7 @@ export type CourseCreateInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCoursesInput
@@ -404,6 +417,7 @@ export type CourseUncheckedCreateInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -421,6 +435,7 @@ export type CourseUpdateInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCoursesNestedInput
@@ -440,6 +455,7 @@ export type CourseUncheckedUpdateInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -458,6 +474,7 @@ export type CourseCreateManyInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -474,6 +491,7 @@ export type CourseUpdateManyMutationInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -490,6 +508,7 @@ export type CourseUncheckedUpdateManyInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -517,6 +536,7 @@ export type CourseCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   errorMsg?: Prisma.SortOrder
   retryCount?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   topicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -537,6 +557,7 @@ export type CourseMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   errorMsg?: Prisma.SortOrder
   retryCount?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   topicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -553,6 +574,7 @@ export type CourseMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   errorMsg?: Prisma.SortOrder
   retryCount?: Prisma.SortOrder
+  isPublic?: Prisma.SortOrder
   topicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -688,6 +710,7 @@ export type CourseCreateWithoutUserInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   topic?: Prisma.TopicCreateNestedOneWithoutCoursesInput
@@ -705,6 +728,7 @@ export type CourseUncheckedCreateWithoutUserInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -752,6 +776,7 @@ export type CourseScalarWhereInput = {
   content?: Prisma.JsonNullableFilter<"Course">
   errorMsg?: Prisma.StringNullableFilter<"Course"> | string | null
   retryCount?: Prisma.IntFilter<"Course"> | number
+  isPublic?: Prisma.BoolFilter<"Course"> | boolean
   topicId?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
@@ -768,6 +793,7 @@ export type CourseCreateWithoutTopicInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCoursesInput
@@ -786,6 +812,7 @@ export type CourseUncheckedCreateWithoutTopicInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   progress?: Prisma.UserProgressUncheckedCreateNestedManyWithoutCourseInput
@@ -828,6 +855,7 @@ export type CourseCreateWithoutProgressInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCoursesInput
@@ -846,6 +874,7 @@ export type CourseUncheckedCreateWithoutProgressInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -878,6 +907,7 @@ export type CourseUpdateWithoutProgressInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCoursesNestedInput
@@ -896,6 +926,7 @@ export type CourseUncheckedUpdateWithoutProgressInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -912,6 +943,7 @@ export type CourseCreateManyUserInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   topicId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -928,6 +960,7 @@ export type CourseUpdateWithoutUserInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   topic?: Prisma.TopicUpdateOneWithoutCoursesNestedInput
@@ -945,6 +978,7 @@ export type CourseUncheckedUpdateWithoutUserInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -962,6 +996,7 @@ export type CourseUncheckedUpdateManyWithoutUserInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   topicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -979,6 +1014,7 @@ export type CourseCreateManyTopicInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: string | null
   retryCount?: number
+  isPublic?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -994,6 +1030,7 @@ export type CourseUpdateWithoutTopicInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCoursesNestedInput
@@ -1012,6 +1049,7 @@ export type CourseUncheckedUpdateWithoutTopicInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   progress?: Prisma.UserProgressUncheckedUpdateManyWithoutCourseNestedInput
@@ -1029,6 +1067,7 @@ export type CourseUncheckedUpdateManyWithoutTopicInput = {
   content?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   errorMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retryCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1076,6 +1115,7 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   content?: boolean
   errorMsg?: boolean
   retryCount?: boolean
+  isPublic?: boolean
   topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1097,6 +1137,7 @@ export type CourseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   content?: boolean
   errorMsg?: boolean
   retryCount?: boolean
+  isPublic?: boolean
   topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1116,6 +1157,7 @@ export type CourseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   content?: boolean
   errorMsg?: boolean
   retryCount?: boolean
+  isPublic?: boolean
   topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1135,12 +1177,13 @@ export type CourseSelectScalar = {
   content?: boolean
   errorMsg?: boolean
   retryCount?: boolean
+  isPublic?: boolean
   topicId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "youtubeUrl" | "videoId" | "title" | "description" | "thumbnail" | "status" | "content" | "errorMsg" | "retryCount" | "topicId" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
+export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "youtubeUrl" | "videoId" | "title" | "description" | "thumbnail" | "status" | "content" | "errorMsg" | "retryCount" | "isPublic" | "topicId" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
 export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   topic?: boolean | Prisma.Course$topicArgs<ExtArgs>
@@ -1175,6 +1218,7 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     content: runtime.JsonValue | null
     errorMsg: string | null
     retryCount: number
+    isPublic: boolean
     topicId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1615,6 +1659,7 @@ export interface CourseFieldRefs {
   readonly content: Prisma.FieldRef<"Course", 'Json'>
   readonly errorMsg: Prisma.FieldRef<"Course", 'String'>
   readonly retryCount: Prisma.FieldRef<"Course", 'Int'>
+  readonly isPublic: Prisma.FieldRef<"Course", 'Boolean'>
   readonly topicId: Prisma.FieldRef<"Course", 'String'>
   readonly createdAt: Prisma.FieldRef<"Course", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Course", 'DateTime'>

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 import { env } from "@/env"
 import Anthropic from "@anthropic-ai/sdk"
@@ -212,5 +212,33 @@ COURSE DESCRIPTION: ${course.description ?? ""}`,
         where: { id: input.id, userId: ctx.session.user.id },
       })
       return { success: true }
+    }),
+
+  setPublic: protectedProcedure
+    .input(z.object({ id: z.string(), isPublic: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.course.updateMany({
+        where: { id: input.id, userId: ctx.session.user.id },
+        data: { isPublic: input.isPublic },
+      })
+      return { isPublic: input.isPublic }
+    }),
+
+  getShared: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const course = await ctx.db.course.findFirst({
+        where: { id: input.id, isPublic: true, status: "READY" },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          videoId: true,
+          content: true,
+          topic: { select: { name: true } },
+        },
+      })
+      if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not public" })
+      return course
     }),
 })

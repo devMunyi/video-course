@@ -157,6 +157,7 @@ export const CourseScalarFieldEnum = {
   content: 'content',
   errorMsg: 'errorMsg',
   retryCount: 'retryCount',
+  isPublic: 'isPublic',
   topicId: 'topicId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

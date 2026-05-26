@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button, Chip, Drawer, DrawerBody, DrawerContent, DrawerHeader, Progress, Spinner } from "@heroui/react"
@@ -88,6 +88,20 @@ export default function CoursePage() {
       void utils.course.getById.invalidate({ id })
       void utils.review.getCount.invalidate()
     },
+  })
+
+  const setPublic = api.course.setPublic.useMutation({
+    onSuccess: ({ isPublic }) => {
+      void utils.course.getById.invalidate({ id })
+      if (isPublic) {
+        const url = `${window.location.origin}/share/${id}`
+        void navigator.clipboard.writeText(url)
+        toast.success("Share link copied to clipboard!")
+      } else {
+        toast.success("Course is now private")
+      }
+    },
+    onError: (e) => toast.error(e.message),
   })
 
   const content = course?.content as unknown as CourseContent | undefined
@@ -231,6 +245,15 @@ export default function CoursePage() {
         <span className="text-default-300">/</span>
         <h1 className="flex-1 truncate text-sm font-medium">{course.title}</h1>
         <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant={course.isPublic ? "flat" : "ghost"}
+            color={course.isPublic ? "success" : "default"}
+            isLoading={setPublic.isPending}
+            onPress={() => setPublic.mutate({ id, isPublic: !course.isPublic })}
+          >
+            {course.isPublic ? "🔗 Shared" : "Share"}
+          </Button>
           <ThemeToggle />
           <span className="text-xs text-default-400">{totalPct}% complete</span>
           <Progress
