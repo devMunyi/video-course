@@ -67,6 +67,7 @@ export const courseRouter = createTRPCRouter({
         videoId: true,
         retryCount: true,
         topicId: true,
+        milestonesCount: true,
         topic: { select: { id: true, name: true } },
         createdAt: true,
         progress: {

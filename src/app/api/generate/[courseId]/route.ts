@@ -33,6 +33,7 @@ export async function POST(
         description: content.description,
         topicId,
         content: content as unknown as Prisma.InputJsonValue,
+        milestonesCount: content.milestones.length,
       },
     })
 

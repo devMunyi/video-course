@@ -35,10 +35,10 @@ type Course = {
   videoId: string
   retryCount: number
   topicId: string | null
+  milestonesCount: number
   topic: { id: string; name: string } | null
   createdAt: Date
   progress: { completedMilestones: string[] }[]
-  content?: unknown
 }
 
 function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => void }) {
@@ -170,8 +170,7 @@ function CourseCard({
   deleteCourse: ReturnType<typeof api.course.delete.useMutation>
   onUpdated: () => void
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const milestoneCount = (course as any).content?.milestones?.length ?? 0
+  const milestoneCount = course.milestonesCount
   const completedCount = course.progress[0]?.completedMilestones?.length ?? 0
   const pct = milestoneCount > 0 ? Math.round((completedCount / milestoneCount) * 100) : 0
   const isReady = course.status === "READY"
@@ -274,7 +273,7 @@ export default function DashboardPage() {
   const deleteCourse = api.course.delete.useMutation({ onSuccess: () => refetch() })
 
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"ALL" | "READY" | "PENDING" | "FAILED">("ALL")
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED">("ALL")
 
   async function handleSignOut() {
     await signOut()
@@ -283,9 +282,13 @@ export default function DashboardPage() {
 
   const filteredCourses = (courses ?? []).filter((c) => {
     const matchesSearch = c.title.toLowerCase().includes(search.toLowerCase())
+    const completed = c.progress[0]?.completedMilestones?.length ?? 0
+    const total = c.milestonesCount
     const matchesStatus =
       statusFilter === "ALL" ||
-      (statusFilter === "PENDING" ? c.status === "PENDING" || c.status === "GENERATING" : c.status === statusFilter)
+      (statusFilter === "NOT_STARTED" && c.status === "READY" && completed === 0) ||
+      (statusFilter === "IN_PROGRESS" && c.status === "READY" && completed > 0 && completed < total) ||
+      (statusFilter === "COMPLETED" && c.status === "READY" && total > 0 && completed >= total)
     return matchesSearch && matchesStatus
   })
 
@@ -370,7 +373,7 @@ export default function DashboardPage() {
               onClear={() => setSearch("")}
             />
             <div className="flex gap-2">
-              {(["ALL", "READY", "PENDING", "FAILED"] as const).map((s) => (
+              {(["ALL", "NOT_STARTED", "IN_PROGRESS", "COMPLETED"] as const).map((s) => (
                 <Chip
                   key={s}
                   size="sm"
@@ -379,7 +382,7 @@ export default function DashboardPage() {
                   className="cursor-pointer"
                   onClick={() => setStatusFilter(s)}
                 >
-                  {s === "ALL" ? "All" : s === "PENDING" ? "In Progress" : s === "READY" ? "Ready" : "Failed"}
+                  {s === "ALL" ? "All" : s === "NOT_STARTED" ? "Not started" : s === "IN_PROGRESS" ? "In progress" : "Completed"}
                 </Chip>
               ))}
             </div>
@@ -415,7 +418,7 @@ export default function DashboardPage() {
           <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-divider py-16 text-center">
             <div className="text-4xl">🔍</div>
             <p className="text-sm text-default-500">No courses match your search.</p>
-            <Button size="sm" variant="flat" onPress={() => { setSearch(""); setStatusFilter("ALL") }}>
+            <Button size="sm" variant="flat" onPress={() => { setSearch(""); setStatusFilter("ALL" as const) }}>
               Clear filters
             </Button>
           </div>

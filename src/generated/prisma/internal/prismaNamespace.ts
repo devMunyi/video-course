@@ -1049,6 +1049,7 @@ export const CourseScalarFieldEnum = {
   errorMsg: 'errorMsg',
   retryCount: 'retryCount',
   isPublic: 'isPublic',
+  milestonesCount: 'milestonesCount',
   topicId: 'topicId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
