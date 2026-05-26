@@ -141,15 +141,17 @@ export default function DashboardPage() {
                         <p className="text-xs text-default-400">{dayjs(course.createdAt).fromNow()}</p>
                         {!isReady && (
                           <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                            {course.status === "FAILED" && (
+                            {(course.status === "FAILED" || course.status === "PENDING") && (
                               <Button
                                 size="sm"
                                 variant="flat"
                                 color="primary"
+                                isDisabled={course.retryCount >= 3}
                                 isLoading={retryCourse.isPending && retryCourse.variables?.id === course.id}
                                 onPress={() => retryCourse.mutate({ id: course.id })}
+                                title={course.retryCount >= 3 ? "Max retries reached" : `${3 - course.retryCount} retries left`}
                               >
-                                Retry
+                                Retry {course.retryCount > 0 && `(${3 - course.retryCount} left)`}
                               </Button>
                             )}
                             <Button

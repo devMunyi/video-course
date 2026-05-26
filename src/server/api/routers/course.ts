@@ -62,6 +62,7 @@ export const courseRouter = createTRPCRouter({
         thumbnail: true,
         status: true,
         videoId: true,
+        retryCount: true,
         createdAt: true,
         progress: {
           where: { userId: ctx.session.user.id },
@@ -92,15 +93,22 @@ export const courseRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const course = await ctx.db.course.findFirst({
-        where: { id: input.id, userId: ctx.session.user.id, status: "FAILED" },
+        where: { id: input.id, userId: ctx.session.user.id, status: { in: ["FAILED", "PENDING"] } },
       })
       if (!course) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not in failed state" })
+        throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not in a retryable state" })
+      }
+      if (course.retryCount >= 3) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Maximum retries (3) reached for this course" })
+      }
+      const cooldownMs = 60_000
+      if (Date.now() - course.updatedAt.getTime() < cooldownMs) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Please wait 1 minute before retrying again" })
       }
 
       await ctx.db.course.update({
         where: { id: input.id },
-        data: { status: "PENDING", errorMsg: null },
+        data: { status: "PENDING", errorMsg: null, retryCount: { increment: 1 } },
       })
 
       void fetch(`${env.BETTER_AUTH_URL}/api/generate/${input.id}`, {
