@@ -322,14 +322,14 @@ export default function DashboardPage() {
               🔥 {streak?.currentStreak}
             </div>
           )}
-          {reviewCount > 0 && (
-            <Button as={Link} href="/review" size="sm" color="warning" variant="flat" className="gap-1.5">
-              📌 Review
+          <Button as={Link} href="/review" size="sm" variant="flat" color={reviewCount > 0 ? "warning" : "default"} className="gap-1.5">
+            📌 Review
+            {reviewCount > 0 && (
               <span className="flex size-4 items-center justify-center rounded-full bg-warning text-[10px] font-bold text-white">
                 {reviewCount}
               </span>
-            </Button>
-          )}
+            )}
+          </Button>
           <ThemeToggle />
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
