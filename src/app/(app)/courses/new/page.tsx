@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { z } from "zod"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button, Card, CardBody, Input } from "@heroui/react"
@@ -8,9 +9,19 @@ import { api } from "@/trpc/react"
 import toast from "react-hot-toast"
 import { ThemeToggle } from "@/components/ThemeToggle"
 
+const YOUTUBE_REGEX = /(?:v=|\/v\/|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/
+const youtubeSchema = z.url().refine((v) => YOUTUBE_REGEX.test(v))
+
+function isValidYouTubeUrl(value: string): boolean {
+  return youtubeSchema.safeParse(value).success
+}
+
 export default function NewCoursePage() {
   const router = useRouter()
   const [url, setUrl] = useState("")
+
+  const isDirty = url.trim().length > 0
+  const isValid = isValidYouTubeUrl(url.trim())
 
   const create = api.course.create.useMutation({
     onSuccess: ({ courseId }) => {
@@ -23,7 +34,7 @@ export default function NewCoursePage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!url.trim()) return
+    if (!isValid) return
     create.mutate({ youtubeUrl: url.trim() })
   }
 
@@ -57,6 +68,9 @@ export default function NewCoursePage() {
                   placeholder="https://youtube.com/watch?v=..."
                   size="lg"
                   variant="bordered"
+                  isInvalid={isDirty && !isValid}
+                  errorMessage={isDirty && !isValid ? "Please enter a valid YouTube URL" : undefined}
+                  color={isDirty ? (isValid ? "success" : "danger") : "default"}
                   startContent={
                     <svg viewBox="0 0 24 24" className="size-5 fill-red-500">
                       <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -69,7 +83,7 @@ export default function NewCoursePage() {
                   color="primary"
                   size="lg"
                   isLoading={create.isPending}
-                  isDisabled={!url.trim()}
+                  isDisabled={!isValid}
                   className="w-full"
                 >
                   {create.isPending ? "Creating course..." : "Generate course"}
