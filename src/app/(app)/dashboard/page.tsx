@@ -268,6 +268,7 @@ export default function DashboardPage() {
   const { data: session } = useSession()
   const { data: courses, isLoading, refetch } = api.course.list.useQuery()
   const { data: reviewCount = 0 } = api.review.getCount.useQuery()
+  const { data: streak } = api.progress.getStreak.useQuery()
 
   const retryCourse = api.course.retry.useMutation({ onSuccess: () => refetch() })
   const deleteCourse = api.course.delete.useMutation({ onSuccess: () => refetch() })
@@ -312,6 +313,15 @@ export default function DashboardPage() {
           VideoCourse
         </Link>
         <div className="flex items-center gap-3">
+          {(streak?.currentStreak ?? 0) > 0 && (
+            <div className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold ${
+              streak?.studiedToday
+                ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
+                : "bg-default-100 text-default-400"
+            }`}>
+              🔥 {streak?.currentStreak}
+            </div>
+          )}
           {reviewCount > 0 && (
             <Button as={Link} href="/review" size="sm" color="warning" variant="flat" className="gap-1.5">
               📌 Review

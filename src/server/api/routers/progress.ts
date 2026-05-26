@@ -47,6 +47,36 @@ export const progressRouter = createTRPCRouter({
           )
         : baseReviewDates
 
+      // Update study streak
+      const todayUTC = new Date()
+      todayUTC.setUTCHours(0, 0, 0, 0)
+
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { lastStudiedAt: true, currentStreak: true, longestStreak: true },
+      })
+
+      if (user) {
+        const lastDate = user.lastStudiedAt ? new Date(user.lastStudiedAt) : null
+        lastDate?.setUTCHours(0, 0, 0, 0)
+        const lastMs = lastDate?.getTime()
+        const todayMs = todayUTC.getTime()
+        const yesterdayMs = todayMs - 86_400_000
+
+        const isNewDay = lastMs !== todayMs
+        if (isNewDay) {
+          const newStreak = lastMs === yesterdayMs ? user.currentStreak + 1 : 1
+          await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: {
+              lastStudiedAt: new Date(),
+              currentStreak: newStreak,
+              longestStreak: Math.max(newStreak, user.longestStreak),
+            },
+          })
+        }
+      }
+
       return ctx.db.userProgress.upsert({
         where: { userId_courseId: { userId: ctx.session.user.id, courseId: input.courseId } },
         create: {
@@ -67,4 +97,20 @@ export const progressRouter = createTRPCRouter({
         },
       })
     }),
+
+  getStreak: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: { currentStreak: true, longestStreak: true, lastStudiedAt: true },
+    })
+    if (!user) return { currentStreak: 0, longestStreak: 0, studiedToday: false }
+
+    const todayUTC = new Date()
+    todayUTC.setUTCHours(0, 0, 0, 0)
+    const lastDate = user.lastStudiedAt ? new Date(user.lastStudiedAt) : null
+    lastDate?.setUTCHours(0, 0, 0, 0)
+    const studiedToday = lastDate?.getTime() === todayUTC.getTime()
+
+    return { currentStreak: user.currentStreak, longestStreak: user.longestStreak, studiedToday }
+  }),
 })
