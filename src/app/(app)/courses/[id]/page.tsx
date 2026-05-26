@@ -15,6 +15,53 @@ import toast from "react-hot-toast"
 
 const POLL_INTERVAL = 3000
 
+function FailedState({ courseId, errorMsg }: { courseId: string; errorMsg: string | null }) {
+  const router = useRouter()
+  const utils = api.useUtils()
+
+  const retry = api.course.retry.useMutation({
+    onSuccess: () => {
+      void utils.course.getById.invalidate({ id: courseId })
+    },
+    onError: (e) => toast.error(e.message),
+  })
+
+  const del = api.course.delete.useMutation({
+    onSuccess: () => router.push("/dashboard"),
+    onError: (e) => toast.error(e.message),
+  })
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 text-center">
+      <div className="text-5xl">😔</div>
+      <h2 className="text-xl font-bold">Course generation failed</h2>
+      <p className="max-w-sm text-default-500">
+        {errorMsg ?? "We couldn't process this video. The video may not have captions."}
+      </p>
+      <div className="flex gap-3">
+        <Button
+          color="primary"
+          isLoading={retry.isPending}
+          onPress={() => retry.mutate({ id: courseId })}
+        >
+          Retry
+        </Button>
+        <Button
+          variant="flat"
+          color="danger"
+          isLoading={del.isPending}
+          onPress={() => del.mutate({ id: courseId })}
+        >
+          Delete
+        </Button>
+        <Button as={Link} href="/dashboard" variant="ghost">
+          Back to dashboard
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export default function CoursePage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
@@ -142,16 +189,7 @@ export default function CoursePage() {
 
   // Failed state
   if (course.status === "FAILED") {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 text-center">
-        <div className="text-5xl">😔</div>
-        <h2 className="text-xl font-bold">Course generation failed</h2>
-        <p className="max-w-sm text-default-500">
-          {course.errorMsg ?? "We couldn't process this video. The video may not have captions."}
-        </p>
-        <Button as={Link} href="/dashboard" color="primary">Try another video</Button>
-      </div>
-    )
+    return <FailedState courseId={id} errorMsg={course.errorMsg ?? null} />
   }
 
   // Ready state

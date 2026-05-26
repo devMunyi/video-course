@@ -88,6 +88,29 @@ export const courseRouter = createTRPCRouter({
       return course
     }),
 
+  retry: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const course = await ctx.db.course.findFirst({
+        where: { id: input.id, userId: ctx.session.user.id, status: "FAILED" },
+      })
+      if (!course) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not in failed state" })
+      }
+
+      await ctx.db.course.update({
+        where: { id: input.id },
+        data: { status: "PENDING", errorMsg: null },
+      })
+
+      void fetch(`${env.BETTER_AUTH_URL}/api/generate/${input.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }).catch(console.error)
+
+      return { success: true }
+    }),
+
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
