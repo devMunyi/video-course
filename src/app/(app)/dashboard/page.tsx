@@ -273,13 +273,24 @@ export default function DashboardPage() {
   const retryCourse = api.course.retry.useMutation({ onSuccess: () => refetch() })
   const deleteCourse = api.course.delete.useMutation({ onSuccess: () => refetch() })
 
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "READY" | "PENDING" | "FAILED">("ALL")
+
   async function handleSignOut() {
     await signOut()
     router.push("/")
   }
 
+  const filteredCourses = (courses ?? []).filter((c) => {
+    const matchesSearch = c.title.toLowerCase().includes(search.toLowerCase())
+    const matchesStatus =
+      statusFilter === "ALL" ||
+      (statusFilter === "PENDING" ? c.status === "PENDING" || c.status === "GENERATING" : c.status === statusFilter)
+    return matchesSearch && matchesStatus
+  })
+
   // Group by topic name, "Uncategorised" for courses without one
-  const grouped = (courses ?? []).reduce<Record<string, Course[]>>((acc, course) => {
+  const grouped = filteredCourses.reduce<Record<string, Course[]>>((acc, course) => {
     const key = course.topic?.name ?? "Uncategorised"
     acc[key] = [...(acc[key] ?? []), course as Course]
     return acc
@@ -331,7 +342,7 @@ export default function DashboardPage() {
       </nav>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">My Courses</h1>
             <p className="text-sm text-default-500">You can create up to 5 courses per day</p>
@@ -340,6 +351,40 @@ export default function DashboardPage() {
             + New Course
           </Button>
         </div>
+
+        {/* Search + filter bar */}
+        {!isLoading && (courses?.length ?? 0) > 0 && (
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Input
+              placeholder="Search courses…"
+              value={search}
+              onValueChange={setSearch}
+              size="sm"
+              className="sm:max-w-xs"
+              startContent={
+                <svg className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+              }
+              isClearable
+              onClear={() => setSearch("")}
+            />
+            <div className="flex gap-2">
+              {(["ALL", "READY", "PENDING", "FAILED"] as const).map((s) => (
+                <Chip
+                  key={s}
+                  size="sm"
+                  variant={statusFilter === s ? "solid" : "flat"}
+                  color={statusFilter === s ? "primary" : "default"}
+                  className="cursor-pointer"
+                  onClick={() => setStatusFilter(s)}
+                >
+                  {s === "ALL" ? "All" : s === "PENDING" ? "In Progress" : s === "READY" ? "Ready" : "Failed"}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        )}
 
         {isLoading && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -366,7 +411,17 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {!isLoading && courses && courses.length > 0 && (
+        {!isLoading && (courses?.length ?? 0) > 0 && filteredCourses.length === 0 && (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-divider py-16 text-center">
+            <div className="text-4xl">🔍</div>
+            <p className="text-sm text-default-500">No courses match your search.</p>
+            <Button size="sm" variant="flat" onPress={() => { setSearch(""); setStatusFilter("ALL") }}>
+              Clear filters
+            </Button>
+          </div>
+        )}
+
+        {!isLoading && courses && courses.length > 0 && filteredCourses.length > 0 && (
           <div className="flex flex-col gap-10">
             {sortedGroups.map(([topicName, topicCourses]) => (
               <section key={topicName}>
