@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Button, Chip } from "@heroui/react"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { useSession } from "@/lib/auth-client"
 
 const FEATURES = [
   {
@@ -56,6 +57,9 @@ const STEPS = [
 ]
 
 export default function LandingPage() {
+  const { data: session } = useSession()
+  const isLoggedIn = !!session?.user
+
   return (
     <main className="flex min-h-screen flex-col bg-background">
       {/* Nav */}
@@ -63,12 +67,20 @@ export default function LandingPage() {
         <span className="text-xl font-bold text-primary">VideoCourse</span>
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button as={Link} href="/login" variant="ghost" size="sm">
-            Sign in
-          </Button>
-          <Button as={Link} href="/login" color="primary" size="sm">
-            Get started free
-          </Button>
+          {isLoggedIn ? (
+            <Button as={Link} href="/dashboard" color="primary" size="sm">
+              Go to dashboard →
+            </Button>
+          ) : (
+            <>
+              <Button as={Link} href="/login" variant="ghost" size="sm">
+                Sign in
+              </Button>
+              <Button as={Link} href="/login" color="primary" size="sm">
+                Get started free
+              </Button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -86,14 +98,18 @@ export default function LandingPage() {
           repetition — all generated in under a minute.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Button as={Link} href="/login" color="primary" size="lg" className="px-10">
-            Start learning for free
+          <Button as={Link} href={isLoggedIn ? "/dashboard" : "/login"} color="primary" size="lg" className="px-10">
+            {isLoggedIn ? "Go to your dashboard →" : "Start learning for free"}
           </Button>
-          <Button as={Link} href="/login" variant="flat" size="lg">
-            See how it works ↓
-          </Button>
+          {!isLoggedIn && (
+            <Button as={Link} href="/login" variant="flat" size="lg">
+              See how it works ↓
+            </Button>
+          )}
         </div>
-        <p className="text-xs text-default-400">No credit card required · Up to 5 courses per day</p>
+        {!isLoggedIn && (
+          <p className="text-xs text-default-400">No credit card required · Up to 5 courses per day</p>
+        )}
       </section>
 
       {/* How it works */}
@@ -143,11 +159,11 @@ export default function LandingPage() {
           </p>
           <Button
             as={Link}
-            href="/login"
+            href={isLoggedIn ? "/dashboard" : "/login"}
             size="lg"
             className="bg-white px-10 font-semibold text-primary hover:bg-primary-50"
           >
-            Get started — it&apos;s free
+            {isLoggedIn ? "Go to your dashboard →" : "Get started — it's free"}
           </Button>
         </div>
       </section>
