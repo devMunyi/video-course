@@ -20,18 +20,19 @@ export async function resolveTopicId(
   )
   if (exact) return exact.id
 
-  // 2. Ask Claude Haiku to find the best match from the existing list
-  const topicNames = allTopics.map((t) => t.name)
+  // 2. Ask Claude Haiku to semantically match against existing topics with descriptions
+  const topicList = allTopics.map((t) => `- ${t.name}: ${t.description}`).join("\n")
   const msg = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 50,
     messages: [{
       role: "user",
-      content: `Does any topic in this list closely match "${suggestedName}"? If yes, return the exact matching name as a plain string. If none fit well, return the word "NEW". No other text.\n\nList: ${topicNames.join(", ")}`,
+      content: `Read the topic descriptions below to understand their semantic meaning. Does any of them closely match the concept "${suggestedName}"? If yes, return ONLY the exact topic name as a plain string. If none fit well, return the word "NEW". No other text.\n\nTOPICS:\n${topicList}`,
     }],
   })
 
   const answer = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "NEW"
+  const topicNames = allTopics.map((t) => t.name)
 
   if (answer !== "NEW" && topicNames.includes(answer)) {
     return allTopics.find((t) => t.name === answer)!.id

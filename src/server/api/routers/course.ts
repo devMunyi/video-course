@@ -121,7 +121,7 @@ export const courseRouter = createTRPCRouter({
       return { success: true }
     }),
 
-  // Returns DB topics ranked by relevance to this course using Claude Haiku
+  // Returns DB topics ranked by relevance, or a suggested new topic name if none fit
   suggestTopics: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -133,26 +133,48 @@ export const courseRouter = createTRPCRouter({
         ctx.db.topic.findMany({ orderBy: { name: "asc" } }),
       ])
 
-      if (!course?.title || allTopics.length === 0) return { suggestions: [] }
+      if (!course?.title) return { existing: [], newSuggestion: null }
 
       const topicNames = allTopics.map((t) => t.name)
+      const topicList = allTopics
+        .map((t) => `- ${t.name}: ${t.description}`)
+        .join("\n")
 
       const msg = await anthropic.messages.create({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 80,
+        max_tokens: 120,
         messages: [{
           role: "user",
-          content: `From the list below, pick the 3 most relevant topics for this course. Return ONLY a JSON array of 3 strings exactly as they appear in the list, no other text.\n\nTopics: ${topicNames.join(", ")}\n\nCourse title: ${course.title}\nDescription: ${course.description}`,
+          content: `You are categorising a learning course. Read the topic descriptions carefully to understand their semantic meaning, then match them to the course content.
+
+Pick up to 3 existing topics that best fit (use the EXACT name as listed). If the course content doesn't fit any existing topic well, suggest one new short topic name (1-3 words) as "NEW:<name>".
+
+Return ONLY a JSON array, e.g. ["Finance", "Investing"] or ["Finance", "NEW:Crypto Trading"]. No other text.
+
+EXISTING TOPICS:
+${topicList}
+
+COURSE TITLE: ${course.title}
+COURSE DESCRIPTION: ${course.description ?? ""}`,
         }],
       })
 
       try {
         const text = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "[]"
-        const names = (JSON.parse(text) as string[]).filter((s) => topicNames.includes(s)).slice(0, 3)
-        const suggestions = names.map((name) => allTopics.find((t) => t.name === name)!).filter(Boolean)
-        return { suggestions }
+        const raw = JSON.parse(text) as string[]
+
+        const existing = raw
+          .filter((s) => !s.startsWith("NEW:"))
+          .map((s) => allTopics.find((t) => t.name.toLowerCase() === s.toLowerCase()))
+          .filter((t): t is NonNullable<typeof t> => t != null)
+          .slice(0, 3)
+
+        const newEntry = raw.find((s) => s.startsWith("NEW:"))
+        const newSuggestion = newEntry ? newEntry.replace("NEW:", "").trim() : null
+
+        return { existing, newSuggestion }
       } catch {
-        return { suggestions: [] }
+        return { existing: [], newSuggestion: null }
       }
     }),
 

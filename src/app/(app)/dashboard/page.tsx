@@ -47,7 +47,7 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
 
   const { data: suggestData, isFetching: loadingSuggestions } = api.course.suggestTopics.useQuery(
     { id: course.id },
-    { enabled: editing, staleTime: Infinity },
+    { enabled: editing, staleTime: Infinity, retry: false },
   )
 
   const updateTopic = api.course.updateTopic.useMutation({
@@ -104,20 +104,35 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
         <div className="flex flex-wrap gap-1">
           {loadingSuggestions ? (
             <span className="text-xs text-default-400">Getting suggestions<AnimatedDots /></span>
-          ) : suggestData?.suggestions && suggestData.suggestions.length > 0 ? (
+          ) : (
             <>
-              <span className="w-full text-xs text-default-400">Suggested:</span>
-              {suggestData.suggestions.map((s) => (
-                <button
-                  key={s.id}
-                  className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
-                  onClick={() => saveById(s.id)}
-                >
-                  {s.name}
-                </button>
-              ))}
+              {(suggestData?.existing ?? []).length > 0 && (
+                <>
+                  <span className="w-full text-xs text-default-400">Suggested from your topics:</span>
+                  {suggestData!.existing.map((s) => (
+                    <button
+                      key={s.id}
+                      className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+                      onClick={() => saveById(s.id)}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </>
+              )}
+              {suggestData?.newSuggestion && (
+                <>
+                  <span className="w-full text-xs text-default-400 mt-1">New topic suggestion:</span>
+                  <button
+                    className="rounded-full border border-dashed border-primary/50 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
+                    onClick={() => saveByName(suggestData.newSuggestion!)}
+                  >
+                    + {suggestData.newSuggestion}
+                  </button>
+                </>
+              )}
             </>
-          ) : null}
+          )}
         </div>
       </div>
     )

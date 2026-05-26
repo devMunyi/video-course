@@ -67,10 +67,11 @@ model Verification {
 // ─── App tables ───────────────────────────────────────────────────────────────
 
 model Topic {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  courses   Course[]
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  courses     Course[]
 }
 
 model Course {
