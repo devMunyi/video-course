@@ -66,8 +66,7 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
 
   if (editing) {
     return (
-      <div className="flex flex-col gap-1.5" onClick={(e) => { e.stopPropagation(); e.preventDefault() }}>
-        {/* Free-form input for custom topics */}
+      <div className="flex flex-col gap-2 py-1" onClick={(e) => { e.stopPropagation(); e.preventDefault() }}>
         <form
           className="flex items-center gap-1"
           onSubmit={(e) => { e.preventDefault(); saveByName(customValue) }}
@@ -77,8 +76,7 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
             size="sm"
             value={customValue}
             onValueChange={setCustomValue}
-            placeholder="Type a custom topic…"
-            className="h-7 text-xs"
+            placeholder="Or type a custom topic…"
             onKeyDown={(e) => e.key === "Escape" && setEditing(false)}
           />
           <Button
@@ -88,37 +86,60 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
             isLoading={updateTopic.isPending}
             isDisabled={!customValue.trim()}
             isIconOnly
-            className="h-7 w-7 min-w-0 shrink-0"
+            className="shrink-0"
           >
             ✓
           </Button>
+          <Button
+            size="sm"
+            variant="light"
+            isIconOnly
+            className="shrink-0"
+            onPress={() => setEditing(false)}
+          >
+            ✕
+          </Button>
         </form>
 
-        {/* AI-suggested chips from DB topics */}
         <div className="flex flex-wrap gap-1">
           {loadingSuggestions ? (
-            <span className="text-xs text-default-400">Suggesting<AnimatedDots /></span>
-          ) : suggestData?.suggestions.map((s) => (
-            <button
-              key={s.id}
-              className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary hover:bg-primary/20 transition-colors"
-              onClick={() => saveById(s.id)}
-            >
-              {s.name}
-            </button>
-          ))}
+            <span className="text-xs text-default-400">Getting suggestions<AnimatedDots /></span>
+          ) : suggestData?.suggestions && suggestData.suggestions.length > 0 ? (
+            <>
+              <span className="w-full text-xs text-default-400">Suggested:</span>
+              {suggestData.suggestions.map((s) => (
+                <button
+                  key={s.id}
+                  className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+                  onClick={() => saveById(s.id)}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </>
+          ) : null}
         </div>
       </div>
     )
   }
 
-  return (
+  return course.topic ? (
     <button
-      className="text-left text-xs text-default-400 hover:text-primary transition-colors"
+      className="flex items-center gap-1 group w-fit"
       onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
-      title="Click to edit topic"
+      title="Change topic"
     >
-      {course.topic?.name ?? "Uncategorised"} ✎
+      <span className="rounded-full bg-default-100 px-2.5 py-0.5 text-xs font-medium text-default-600 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+        {course.topic.name}
+      </span>
+      <span className="text-xs text-default-400 opacity-0 group-hover:opacity-100 transition-opacity">✎</span>
+    </button>
+  ) : (
+    <button
+      className="flex items-center gap-1 rounded-full border border-dashed border-default-300 px-2.5 py-0.5 text-xs text-default-400 hover:border-primary hover:text-primary transition-colors w-fit"
+      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
+    >
+      + Add topic
     </button>
   )
 }
