@@ -105,7 +105,7 @@ export default function DashboardPage() {
                   isPressable={isReady}
                   as={isReady ? Link : undefined}
                   href={`/courses/${course.id}`}
-                  className={`overflow-hidden transition-opacity ${!isReady ? "cursor-not-allowed opacity-60" : ""}`}
+                  className={`overflow-hidden ${!isReady ? "cursor-not-allowed" : ""}`}
                 >
                   <CardBody className="gap-3 p-0">
                     <Image
