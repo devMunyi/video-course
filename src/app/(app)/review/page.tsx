@@ -27,15 +27,15 @@ export default function ReviewPage() {
   }
 
   function handleScore(courseId: string, questionId: string, score: "got_it" | "review") {
-    const reviewDate =
-      score === "review"
-        ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-
     upsertProgress.mutate({
       courseId,
       recallSelfScores: { [questionId]: score },
-      recallReviewDates: { [questionId]: score === "got_it" ? null : reviewDate },
+      recallReviewDates: {
+        [questionId]:
+          score === "review"
+            ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+            : null,
+      },
     })
 
     setRevealed((prev) => {

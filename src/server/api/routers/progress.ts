@@ -56,7 +56,7 @@ export const progressRouter = createTRPCRouter({
           recallSelfScores: (input.recallSelfScores ?? {}) as Prisma.InputJsonValue,
           completedMilestones: input.completedMilestones ?? [],
           milestoneNotes: (input.milestoneNotes ?? {}) as Prisma.InputJsonValue,
-          recallReviewDates: {} as Prisma.InputJsonValue,
+          recallReviewDates: mergedReviewDates,
         },
         update: {
           ...(input.quizAnswers && { quizAnswers: mergedQuiz }),

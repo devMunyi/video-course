@@ -84,7 +84,10 @@ export default function CoursePage() {
   )
 
   const upsertProgress = api.progress.upsert.useMutation({
-    onSuccess: () => void utils.course.getById.invalidate({ id }),
+    onSuccess: () => {
+      void utils.course.getById.invalidate({ id })
+      void utils.review.getCount.invalidate()
+    },
   })
 
   const content = course?.content as unknown as CourseContent | undefined
@@ -312,6 +315,7 @@ export default function CoursePage() {
                     questions={currentMilestone.active_recall}
                     savedScores={recallScores}
                     onScore={handleRecallScore}
+                    isSaving={upsertProgress.isPending}
                   />
 
                   {/* Quiz */}

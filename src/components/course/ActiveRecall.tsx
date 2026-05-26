@@ -15,9 +15,10 @@ type Props = {
   questions: ARQuestion[]
   savedScores: Record<string, string>
   onScore: (questionId: string, score: "got_it" | "review") => void
+  isSaving?: boolean
 }
 
-export default function ActiveRecall({ questions, savedScores, onScore }: Props) {
+export default function ActiveRecall({ questions, savedScores, onScore, isSaving = false }: Props) {
   const [revealed, setRevealed] = useState<Set<string>>(new Set())
   const [showHint, setShowHint] = useState<Set<string>>(new Set())
 
@@ -101,6 +102,7 @@ export default function ActiveRecall({ questions, savedScores, onScore }: Props)
                           size="sm"
                           color="success"
                           variant="flat"
+                          isLoading={isSaving}
                           onPress={() => onScore(q.id, "got_it")}
                         >
                           ✓ Got it
@@ -109,6 +111,7 @@ export default function ActiveRecall({ questions, savedScores, onScore }: Props)
                           size="sm"
                           color="warning"
                           variant="flat"
+                          isLoading={isSaving}
                           onPress={() => onScore(q.id, "review")}
                         >
                           📌 Needs review
