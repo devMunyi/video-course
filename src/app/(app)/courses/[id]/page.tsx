@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button, Chip, Progress, Spinner } from "@heroui/react"
+import { Button, Chip, Drawer, DrawerBody, DrawerContent, DrawerHeader, Progress, Spinner } from "@heroui/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { api } from "@/trpc/react"
 import type { CourseContent } from "@/server/services/claude"
@@ -69,6 +69,7 @@ export default function CoursePage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0)
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
   const utils = api.useUtils()
 
@@ -249,7 +250,7 @@ export default function CoursePage() {
         </div>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-10">
+        <main className="flex-1 overflow-y-auto px-6 py-8 pb-24 lg:pb-8 lg:px-10">
           <div className="mx-auto max-w-3xl">
             <AnimatePresence mode="wait">
               {currentMilestone && (
@@ -345,6 +346,65 @@ export default function CoursePage() {
           </div>
         </main>
       </div>
+
+      {/* Mobile milestone bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-divider bg-background/90 backdrop-blur lg:hidden">
+        <button
+          onClick={() => setMobileDrawerOpen(true)}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left"
+        >
+          <span className={`flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+            currentMilestone && completedMilestones.includes(currentMilestone.id)
+              ? "bg-success text-white"
+              : "bg-primary text-white"
+          }`}>
+            {currentMilestone && completedMilestones.includes(currentMilestone.id)
+              ? "✓"
+              : currentMilestoneIndex + 1}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{currentMilestone?.title}</p>
+            <p className="text-xs text-default-400">
+              Milestone {currentMilestoneIndex + 1} of {milestones.length} · {totalPct}% complete
+            </p>
+          </div>
+          <svg className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile milestone drawer */}
+      <Drawer
+        isOpen={mobileDrawerOpen}
+        onOpenChange={setMobileDrawerOpen}
+        placement="bottom"
+        classNames={{ base: "lg:hidden max-h-[80vh]" }}
+      >
+        <DrawerContent>
+          <DrawerHeader className="border-b border-divider pb-3 text-base font-semibold">
+            Milestones
+          </DrawerHeader>
+          <DrawerBody className="overflow-y-auto py-3">
+            <MilestoneSidebar
+              milestones={milestones}
+              currentIndex={currentMilestoneIndex}
+              completedIds={completedMilestones}
+              noteIds={Object.keys(milestoneNotes).filter((id) => milestoneNotes[id]?.trim())}
+              onSelect={(i) => {
+                setCurrentMilestoneIndex(i)
+                setMobileDrawerOpen(false)
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              }}
+            />
+            {totalPct === 100 && (
+              <div className="mt-4 rounded-xl bg-success-50 p-4 text-center text-sm text-success-700">
+                🎉 Course complete!
+              </div>
+            )}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </div>
   )
 }
