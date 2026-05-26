@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bun db:push)"
+      "Bash(bun db:push)",
+      "Bash(node -e ' *)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:docs.supadata.ai)"
     ]
   }
 }
