@@ -27,7 +27,10 @@ const STATUS_LABEL = {
 export default function DashboardPage() {
   const router = useRouter()
   const { data: session } = useSession()
-  const { data: courses, isLoading } = api.course.list.useQuery()
+  const { data: courses, isLoading, refetch } = api.course.list.useQuery()
+
+  const retryCourse = api.course.retry.useMutation({ onSuccess: () => refetch() })
+  const deleteCourse = api.course.delete.useMutation({ onSuccess: () => refetch() })
 
   async function handleSignOut() {
     await signOut()
@@ -94,13 +97,15 @@ export default function DashboardPage() {
               const completedCount = course.progress[0]?.completedMilestones?.length ?? 0
               const pct = milestoneCount > 0 ? Math.round((completedCount / milestoneCount) * 100) : 0
 
+              const isReady = course.status === "READY"
+
               return (
                 <Card
                   key={course.id}
-                  isPressable={course.status === "READY"}
-                  as={course.status === "READY" ? Link : undefined}
+                  isPressable={isReady}
+                  as={isReady ? Link : undefined}
                   href={`/courses/${course.id}`}
-                  className="overflow-hidden"
+                  className={`overflow-hidden transition-opacity ${!isReady ? "cursor-not-allowed opacity-60" : ""}`}
                 >
                   <CardBody className="gap-3 p-0">
                     <Image
@@ -123,7 +128,7 @@ export default function DashboardPage() {
                           {STATUS_LABEL[course.status as keyof typeof STATUS_LABEL]}
                         </Chip>
                       </div>
-                      {course.status === "READY" && milestoneCount > 0 && (
+                      {isReady && milestoneCount > 0 && (
                         <div className="mt-2">
                           <div className="mb-1 flex justify-between text-xs text-default-500">
                             <span>{completedCount}/{milestoneCount} milestones</span>
@@ -132,9 +137,33 @@ export default function DashboardPage() {
                           <Progress value={pct} size="sm" color="primary" />
                         </div>
                       )}
-                      <p className="mt-2 text-xs text-default-400">
-                        {dayjs(course.createdAt).fromNow()}
-                      </p>
+                      <div className="mt-2 flex items-center justify-between">
+                        <p className="text-xs text-default-400">{dayjs(course.createdAt).fromNow()}</p>
+                        {!isReady && (
+                          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                            {course.status === "FAILED" && (
+                              <Button
+                                size="sm"
+                                variant="flat"
+                                color="primary"
+                                isLoading={retryCourse.isPending && retryCourse.variables?.id === course.id}
+                                onPress={() => retryCourse.mutate({ id: course.id })}
+                              >
+                                Retry
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              color="danger"
+                              isLoading={deleteCourse.isPending && deleteCourse.variables?.id === course.id}
+                              onPress={() => deleteCourse.mutate({ id: course.id })}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CardBody>
                 </Card>
