@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { AnimatedDots } from "@/components/AnimatedDots"
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { Button, Card, CardBody, Chip, Image, Input, Progress } from "@heroui/react"
+import { Avatar, Button, Card, CardBody, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Image, Input, Progress } from "@heroui/react"
 import { api } from "@/trpc/react"
 import { signOut, useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
@@ -296,12 +296,28 @@ export default function DashboardPage() {
         <Link href="/dashboard" className="text-xl font-bold text-primary">
           VideoCourse
         </Link>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-default-500">{session?.user.name}</span>
+        <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button variant="ghost" size="sm" onPress={handleSignOut}>
-            Sign out
-          </Button>
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger>
+              <Avatar
+                as="button"
+                size="sm"
+                src={session?.user.image ?? undefined}
+                name={session?.user.name ?? undefined}
+                className="cursor-pointer transition-opacity hover:opacity-80"
+              />
+            </DropdownTrigger>
+            <DropdownMenu aria-label="User menu">
+              <DropdownItem key="profile" isReadOnly className="gap-2 opacity-100" textValue={session?.user.name ?? ""}>
+                <p className="text-xs font-semibold">{session?.user.name}</p>
+                <p className="text-xs text-default-400">{session?.user.email}</p>
+              </DropdownItem>
+              <DropdownItem key="signout" color="danger" onPress={handleSignOut}>
+                Sign out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </nav>
 
