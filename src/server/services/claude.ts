@@ -32,7 +32,7 @@ const MilestoneSchema = z.object({
   timestamp_start: z.string(),
   timestamp_end: z.string(),
   description: z.string(),
-  key_concepts: z.array(z.string()).min(2).max(6),
+  key_concepts: z.array(z.string()).min(2).max(10),
   active_recall: z.array(ActiveRecallSchema).min(1).max(3),
   quiz: z.array(QuizQuestionSchema).min(1).max(3),
 })
