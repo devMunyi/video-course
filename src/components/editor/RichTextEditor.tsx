@@ -12,7 +12,7 @@ import { Color, TextStyle } from "@tiptap/extension-text-style"
 import { type Editor, EditorContent, useEditor } from "@tiptap/react"
 import { BubbleMenu } from "@tiptap/react/menus"
 import StarterKit from "@tiptap/starter-kit"
-import { Bold, Highlighter, Italic, Link as LinkIcon, Strikethrough } from "lucide-react"
+import { Bold, Clock, Highlighter, Italic, Link as LinkIcon, Pencil, Strikethrough } from "lucide-react"
 import { formatTimestamp } from "../course/video-player-context"
 import EditorToolbar from "./EditorToolbar"
 import { Drawing } from "./extensions/drawing"
@@ -36,6 +36,49 @@ type Props = {
   isExpanded?: boolean
   /** Fill the parent's height instead of sizing to content — used by the study-mode pane. */
   fill?: boolean
+}
+
+const HINTS_KEY = "note-editor-hints-dismissed"
+
+/** One-time discoverability strip — the toolbar icons alone don't advertise these. */
+function EditorHints({ hasVideo }: { hasVideo: boolean }) {
+  const [dismissed, setDismissed] = useState(true)
+
+  // Read after mount so the server and client render the same markup
+  useEffect(() => {
+    setDismissed(window.localStorage.getItem(HINTS_KEY) === "1")
+  }, [])
+
+  if (dismissed) return null
+
+  return (
+    <div className="flex items-start gap-2 border-b border-divider bg-default-50 px-3 py-1.5 text-xs text-default-500">
+      <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span>
+          <Pencil size={12} className="inline align-[-1px]" /> draw charts on a canvas
+        </span>
+        {hasVideo && (
+          <span>
+            <Clock size={12} className="inline align-[-1px]" /> or{" "}
+            <kbd className="rounded bg-default-200 px-1 font-mono">Ctrl+Shift+T</kbd> stamps the
+            video time — click a stamp to jump back
+          </span>
+        )}
+        <span>paste a chart screenshot straight in</span>
+      </span>
+      <button
+        type="button"
+        aria-label="Dismiss tips"
+        className="ml-auto shrink-0 rounded px-1 hover:bg-default-200"
+        onClick={() => {
+          window.localStorage.setItem(HINTS_KEY, "1")
+          setDismissed(true)
+        }}
+      >
+        ✕
+      </button>
+    </div>
+  )
 }
 
 export default function RichTextEditor({
@@ -228,6 +271,7 @@ export default function RichTextEditor({
           onToggleExpand={onToggleExpand ?? (() => setOwnExpanded((v) => !v))}
           onInsertTimestamp={getVideoTime ? insertTimestamp : undefined}
         />
+        <EditorHints hasVideo={getVideoTime !== undefined} />
         {/* biome-ignore lint/a11y/noStaticElementInteractions: click target only forwards focus to the editor below */}
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: the editor itself owns keyboard interaction */}
         <div

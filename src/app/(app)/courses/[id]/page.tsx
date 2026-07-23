@@ -385,6 +385,15 @@ export default function CoursePage() {
                     <p className="mt-2 text-default-500">{currentMilestone.description}</p>
                   </div>
 
+                  {/* Notes — kept directly under the video so taking notes while
+                      watching doesn't mean scrolling past the whole milestone */}
+                  <MilestoneNotes
+                    value={noteDraft.value}
+                    onChange={noteDraft.onChange}
+                    status={noteDraft.status}
+                    onOpenStudyMode={() => setStudyMode(true)}
+                  />
+
                   {/* Key concepts */}
                   <div>
                     <h3 className="mb-3 flex items-center gap-2 text-base font-semibold">
@@ -413,14 +422,6 @@ export default function CoursePage() {
                     questions={currentMilestone.quiz}
                     savedAnswers={quizAnswers}
                     onAnswer={handleQuizAnswer}
-                  />
-
-                  {/* Notes */}
-                  <MilestoneNotes
-                    value={noteDraft.value}
-                    onChange={noteDraft.onChange}
-                    status={noteDraft.status}
-                    onOpenStudyMode={() => setStudyMode(true)}
                   />
 
                   {/* Navigation */}
