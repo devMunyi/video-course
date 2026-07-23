@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
 import { Button, Card, CardBody, Chip, Spinner } from "@heroui/react"
-import { motion, AnimatePresence } from "framer-motion"
-import { api } from "@/trpc/react"
-import { ThemeToggle } from "@/components/ThemeToggle"
+import { AnimatePresence, motion } from "framer-motion"
+import Link from "next/link"
+import { useState } from "react"
 import toast from "react-hot-toast"
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { api } from "@/trpc/react"
 
 export default function ReviewPage() {
   const utils = api.useUtils()
@@ -32,9 +32,7 @@ export default function ReviewPage() {
       recallSelfScores: { [questionId]: score },
       recallReviewDates: {
         [questionId]:
-          score === "review"
-            ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-            : null,
+          score === "review" ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null,
       },
     })
 
@@ -48,18 +46,15 @@ export default function ReviewPage() {
   // Group due items by course
   const grouped = (dueItems ?? []).reduce<
     Record<string, { courseTitle: string; items: NonNullable<typeof dueItems> }>
-  >(
-    (acc, item) => {
-      let group = acc[item.courseId]
-      if (!group) {
-        group = { courseTitle: item.courseTitle, items: [] }
-        acc[item.courseId] = group
-      }
-      group.items.push(item)
-      return acc
-    },
-    {},
-  )
+  >((acc, item) => {
+    let group = acc[item.courseId]
+    if (!group) {
+      group = { courseTitle: item.courseTitle, items: [] }
+      acc[item.courseId] = group
+    }
+    group.items.push(item)
+    return acc
+  }, {})
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,7 +76,9 @@ export default function ReviewPage() {
           <div className="flex flex-col items-center gap-4 py-20 text-center">
             <div className="text-5xl">🎉</div>
             <h2 className="text-xl font-bold">You&apos;re all caught up!</h2>
-            <p className="text-default-500">No questions due for review right now. Check back later.</p>
+            <p className="text-default-500">
+              No questions due for review right now. Check back later.
+            </p>
             <Button as={Link} href="/dashboard" color="primary" variant="flat">
               Back to dashboard
             </Button>
@@ -120,7 +117,12 @@ export default function ReviewPage() {
                         </p>
 
                         {!isRevealed ? (
-                          <Button size="sm" color="primary" variant="flat" onPress={() => reveal(item.id)}>
+                          <Button
+                            size="sm"
+                            color="primary"
+                            variant="flat"
+                            onPress={() => reveal(item.id)}
+                          >
                             Reveal answer
                           </Button>
                         ) : (

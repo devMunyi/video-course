@@ -26,8 +26,8 @@ export function weeklyDigestHtml({
     currentStreak === 0
       ? "You haven't started a streak yet — today's a great day to begin!"
       : studiedToday
-      ? `You're on a <strong>${currentStreak}-day streak</strong> 🔥 — keep it going!`
-      : `Your <strong>${currentStreak}-day streak</strong> is at risk — study something today to keep it alive!`
+        ? `You're on a <strong>${currentStreak}-day streak</strong> 🔥 — keep it going!`
+        : `Your <strong>${currentStreak}-day streak</strong> is at risk — study something today to keep it alive!`
 
   return `<!DOCTYPE html>
 <html>
@@ -97,12 +97,16 @@ export function weeklyDigestHtml({
                 </tr>
               </table>
 
-              ${reviewDue > 0 ? `
+              ${
+                reviewDue > 0
+                  ? `
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff7ed;border-radius:12px;margin-bottom:20px;">
                 <tr><td style="padding:16px 24px;">
                   <p style="margin:0;font-size:14px;color:#9a3412;">📌 You have <strong>${reviewDue} question${reviewDue !== 1 ? "s" : ""}</strong> due for review. Don't let them slip!</p>
                 </td></tr>
-              </table>` : ""}
+              </table>`
+                  : ""
+              }
 
               <!-- CTA -->
               <table width="100%" cellpadding="0" cellspacing="0">

@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { Button, Chip } from "@heroui/react"
+import Link from "next/link"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { useSession } from "@/lib/auth-client"
 
@@ -90,15 +90,20 @@ export default function LandingPage() {
           Powered by AI
         </Chip>
         <h1 className="max-w-3xl text-5xl font-bold leading-tight tracking-tight md:text-6xl">
-          Turn any YouTube video into an{" "}
-          <span className="text-primary">interactive course</span>
+          Turn any YouTube video into an <span className="text-primary">interactive course</span>
         </h1>
         <p className="max-w-xl text-lg text-default-500">
           Paste a URL. Get structured milestones, active recall questions, quizzes, and spaced
           repetition — all generated in under a minute.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Button as={Link} href={isLoggedIn ? "/dashboard" : "/login"} color="primary" size="lg" className="px-10">
+          <Button
+            as={Link}
+            href={isLoggedIn ? "/dashboard" : "/login"}
+            color="primary"
+            size="lg"
+            className="px-10"
+          >
             {isLoggedIn ? "Go to your dashboard →" : "Start learning for free"}
           </Button>
           {!isLoggedIn && (
@@ -108,7 +113,9 @@ export default function LandingPage() {
           )}
         </div>
         {!isLoggedIn && (
-          <p className="text-xs text-default-400">No credit card required · Up to 5 courses per day</p>
+          <p className="text-xs text-default-400">
+            No credit card required · Up to 5 courses per day
+          </p>
         )}
       </section>
 
@@ -131,7 +138,9 @@ export default function LandingPage() {
       {/* Features */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-4xl">
-          <h2 className="mb-3 text-center text-3xl font-bold">Everything you need to actually learn</h2>
+          <h2 className="mb-3 text-center text-3xl font-bold">
+            Everything you need to actually learn
+          </h2>
           <p className="mb-12 text-center text-default-500">
             Not just a summary — a full learning system built around how memory actually works.
           </p>

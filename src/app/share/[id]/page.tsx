@@ -1,14 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { Button, Chip, Spinner } from "@heroui/react"
+import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Button, Chip, Spinner } from "@heroui/react"
-import { motion, AnimatePresence } from "framer-motion"
-import { api } from "@/trpc/react"
-import type { CourseContent } from "@/server/services/claude"
+import { useState } from "react"
 import VideoEmbed from "@/components/course/VideoEmbed"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import type { CourseContent } from "@/server/services/claude"
+import { api } from "@/trpc/react"
 
 export default function SharePage() {
   const { id } = useParams<{ id: string }>()
@@ -30,7 +30,9 @@ export default function SharePage() {
         <div className="text-5xl">🔒</div>
         <h2 className="text-xl font-bold">Course not available</h2>
         <p className="text-default-500">This course is private or doesn&apos;t exist.</p>
-        <Button as={Link} href="/" color="primary" variant="flat">Go home</Button>
+        <Button as={Link} href="/" color="primary" variant="flat">
+          Go home
+        </Button>
       </div>
     )
   }
@@ -42,14 +44,20 @@ export default function SharePage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <nav className="sticky top-0 z-10 flex items-center gap-4 border-b border-divider bg-background/80 px-6 py-3 backdrop-blur">
-        <Link href="/" className="text-sm font-bold text-primary">VideoCourse</Link>
+        <Link href="/" className="text-sm font-bold text-primary">
+          VideoCourse
+        </Link>
         <span className="text-default-300">/</span>
         <h1 className="flex-1 truncate text-sm font-medium">{course.title}</h1>
         <div className="flex items-center gap-3">
           {course.topic && (
-            <Chip size="sm" variant="flat" color="secondary">{course.topic.name}</Chip>
+            <Chip size="sm" variant="flat" color="secondary">
+              {course.topic.name}
+            </Chip>
           )}
-          <Chip size="sm" variant="flat" color="default">Read-only</Chip>
+          <Chip size="sm" variant="flat" color="default">
+            Read-only
+          </Chip>
           <ThemeToggle />
           <Button as={Link} href="/dashboard" size="sm" color="primary" variant="flat">
             Create your own
@@ -69,12 +77,16 @@ export default function SharePage() {
               key={m.id}
               onClick={() => setCurrentIndex(i)}
               className={`flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors ${
-                i === currentIndex ? "bg-primary/10 text-primary" : "text-default-600 hover:bg-default-100"
+                i === currentIndex
+                  ? "bg-primary/10 text-primary"
+                  : "text-default-600 hover:bg-default-100"
               }`}
             >
-              <span className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                i === currentIndex ? "bg-primary text-white" : "bg-default-200 text-default-500"
-              }`}>
+              <span
+                className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  i === currentIndex ? "bg-primary text-white" : "bg-default-200 text-default-500"
+                }`}
+              >
                 {i + 1}
               </span>
               <div className="min-w-0">

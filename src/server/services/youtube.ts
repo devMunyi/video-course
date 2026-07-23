@@ -23,7 +23,9 @@ export async function fetchTranscript(videoId: string): Promise<string> {
 
   if (!res.ok) {
     const body = await res.text().catch(() => "")
-    throw new Error(`Transcript unavailable for this video (${res.status}${body ? `: ${body}` : ""})`)
+    throw new Error(
+      `Transcript unavailable for this video (${res.status}${body ? `: ${body}` : ""})`,
+    )
   }
 
   const data: SupadataResponse = await res.json()

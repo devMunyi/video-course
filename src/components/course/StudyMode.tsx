@@ -1,14 +1,8 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@heroui/react"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react"
 import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import RichTextEditor from "@/components/editor/RichTextEditor"
 import SectionDriftNotice from "./SectionDriftNotice"
 import VideoEmbed from "./VideoEmbed"

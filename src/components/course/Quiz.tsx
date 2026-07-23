@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
 import { Button, Card, CardBody, Chip } from "@heroui/react"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
+import { useState } from "react"
 
 type QuizOption = {
   id: string
@@ -45,7 +45,13 @@ export default function Quiz({ questions, savedAnswers, onAnswer }: Props) {
         </h3>
         {Object.keys(selected).length === questions.length && (
           <Chip
-            color={score === questions.length ? "success" : score > questions.length / 2 ? "warning" : "danger"}
+            color={
+              score === questions.length
+                ? "success"
+                : score > questions.length / 2
+                  ? "warning"
+                  : "danger"
+            }
             variant="flat"
             size="sm"
           >
@@ -75,8 +81,13 @@ export default function Quiz({ questions, savedAnswers, onAnswer }: Props) {
                   let btnVariant: "flat" | "bordered" | "solid" = "bordered"
 
                   if (answered) {
-                    if (isCorrect) { btnColor = "success"; btnVariant = "flat" }
-                    else if (isSelected && !isCorrect) { btnColor = "danger"; btnVariant = "flat" }
+                    if (isCorrect) {
+                      btnColor = "success"
+                      btnVariant = "flat"
+                    } else if (isSelected && !isCorrect) {
+                      btnColor = "danger"
+                      btnVariant = "flat"
+                    }
                   }
 
                   return (
@@ -111,7 +122,9 @@ export default function Quiz({ questions, savedAnswers, onAnswer }: Props) {
                     }`}
                   >
                     <span className="font-medium">
-                      {selected[q.id] === correctOption?.id ? "✓ Correct! " : `✗ The correct answer is "${correctOption?.text}". `}
+                      {selected[q.id] === correctOption?.id
+                        ? "✓ Correct! "
+                        : `✗ The correct answer is "${correctOption?.text}". `}
                     </span>
                     {q.explanation}
                   </motion.div>

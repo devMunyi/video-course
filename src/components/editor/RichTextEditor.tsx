@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { Button, Divider } from "@heroui/react"
 import Highlight from "@tiptap/extension-highlight"
 import Image from "@tiptap/extension-image"
@@ -12,7 +11,16 @@ import { Color, TextStyle } from "@tiptap/extension-text-style"
 import { type Editor, EditorContent, useEditor } from "@tiptap/react"
 import { BubbleMenu } from "@tiptap/react/menus"
 import StarterKit from "@tiptap/starter-kit"
-import { Bold, Clock, Highlighter, Italic, Link as LinkIcon, Pencil, Strikethrough } from "lucide-react"
+import {
+  Bold,
+  Clock,
+  Highlighter,
+  Italic,
+  Link as LinkIcon,
+  Pencil,
+  Strikethrough,
+} from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import { formatTimestamp } from "../course/video-player-context"
 import EditorToolbar from "./EditorToolbar"
 import { Drawing } from "./extensions/drawing"
@@ -137,7 +145,11 @@ export default function RichTextEditor({
     content: value,
     extensions: [
       StarterKit.configure({
-        link: { openOnClick: false, autolink: true, HTMLAttributes: { rel: "noopener noreferrer" } },
+        link: {
+          openOnClick: false,
+          autolink: true,
+          HTMLAttributes: { rel: "noopener noreferrer" },
+        },
         codeBlock: { HTMLAttributes: { class: "note-code-block" } },
       }),
       Placeholder.configure({ placeholder }),

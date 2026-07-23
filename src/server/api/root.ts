@@ -1,8 +1,8 @@
-import { createCallerFactory, createTRPCRouter } from "./trpc"
 import { courseRouter } from "./routers/course"
 import { progressRouter } from "./routers/progress"
-import { topicRouter } from "./routers/topic"
 import { reviewRouter } from "./routers/review"
+import { topicRouter } from "./routers/topic"
+import { createCallerFactory, createTRPCRouter } from "./trpc"
 
 export const appRouter = createTRPCRouter({
   course: courseRouter,

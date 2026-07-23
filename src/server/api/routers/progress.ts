@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import type { Prisma } from "@/generated/prisma/client"
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 export const progressRouter = createTRPCRouter({
   upsert: protectedProcedure
@@ -20,15 +20,15 @@ export const progressRouter = createTRPCRouter({
       })
 
       const mergedQuiz: Prisma.InputJsonValue = {
-        ...(existing?.quizAnswers as Record<string, string> ?? {}),
+        ...((existing?.quizAnswers as Record<string, string>) ?? {}),
         ...(input.quizAnswers ?? {}),
       }
       const mergedRecall: Prisma.InputJsonValue = {
-        ...(existing?.recallSelfScores as Record<string, string> ?? {}),
+        ...((existing?.recallSelfScores as Record<string, string>) ?? {}),
         ...(input.recallSelfScores ?? {}),
       }
       const mergedNotes: Prisma.InputJsonValue = {
-        ...(existing?.milestoneNotes as Record<string, string> ?? {}),
+        ...((existing?.milestoneNotes as Record<string, string>) ?? {}),
         ...(input.milestoneNotes ?? {}),
       }
       const mergedMilestones = [
@@ -39,11 +39,12 @@ export const progressRouter = createTRPCRouter({
       ]
 
       // Merge review dates: null value means remove that key (question mastered)
-      const baseReviewDates = (existing?.recallReviewDates as Record<string, string> ?? {})
+      const baseReviewDates = (existing?.recallReviewDates as Record<string, string>) ?? {}
       const mergedReviewDates: Prisma.InputJsonValue = input.recallReviewDates
         ? Object.fromEntries(
-            Object.entries({ ...baseReviewDates, ...input.recallReviewDates })
-              .filter(([, v]) => v !== null)
+            Object.entries({ ...baseReviewDates, ...input.recallReviewDates }).filter(
+              ([, v]) => v !== null,
+            ),
           )
         : baseReviewDates
 
@@ -112,7 +113,11 @@ export const progressRouter = createTRPCRouter({
       z.object({
         courseId: z.string(),
         milestoneId: z.string(),
-        seconds: z.number().int().min(0).max(24 * 60 * 60),
+        seconds: z
+          .number()
+          .int()
+          .min(0)
+          .max(24 * 60 * 60),
       }),
     )
     .mutation(({ ctx, input }) =>

@@ -1,15 +1,28 @@
 "use client"
 
-import Link from "next/link"
-import { AnimatedDots } from "@/components/AnimatedDots"
-import { ThemeToggle } from "@/components/ThemeToggle"
-import { Avatar, Button, Card, CardBody, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Image, Input, Progress } from "@heroui/react"
-import { api } from "@/trpc/react"
-import { signOut, useSession } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import {
+  Avatar,
+  Button,
+  Card,
+  CardBody,
+  Chip,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Image,
+  Input,
+  Progress,
+} from "@heroui/react"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { AnimatedDots } from "@/components/AnimatedDots"
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { signOut, useSession } from "@/lib/auth-client"
+import { api } from "@/trpc/react"
 
 dayjs.extend(relativeTime)
 
@@ -53,7 +66,10 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
   const newSuggestion = suggestData?.newSuggestion ?? null
 
   const updateTopic = api.course.updateTopic.useMutation({
-    onSuccess: () => { onUpdated(); setEditing(false) },
+    onSuccess: () => {
+      onUpdated()
+      setEditing(false)
+    },
   })
 
   function saveById(topicId: string) {
@@ -70,10 +86,19 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
     return (
       // biome-ignore lint/a11y/noStaticElementInteractions: shields the parent card's click handler; not itself interactive
       // biome-ignore lint/a11y/useKeyWithClickEvents: nothing is activated here, the inner controls own keyboard interaction
-      <div className="flex flex-col gap-2 py-1" onClick={(e) => { e.stopPropagation(); e.preventDefault() }}>
+      <div
+        className="flex flex-col gap-2 py-1"
+        onClick={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+        }}
+      >
         <form
           className="flex items-center gap-1"
-          onSubmit={(e) => { e.preventDefault(); saveByName(customValue) }}
+          onSubmit={(e) => {
+            e.preventDefault()
+            saveByName(customValue)
+          }}
         >
           <Input
             autoFocus
@@ -107,12 +132,17 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
 
         <div className="flex flex-wrap gap-1">
           {loadingSuggestions ? (
-            <span className="text-xs text-default-400">Getting suggestions<AnimatedDots /></span>
+            <span className="text-xs text-default-400">
+              Getting suggestions
+              <AnimatedDots />
+            </span>
           ) : (
             <>
               {(suggestData?.existing ?? []).length > 0 && (
                 <>
-                  <span className="w-full text-xs text-default-400">Suggested from your topics:</span>
+                  <span className="w-full text-xs text-default-400">
+                    Suggested from your topics:
+                  </span>
                   {(suggestData?.existing ?? []).map((s) => (
                     <button
                       type="button"
@@ -127,7 +157,9 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
               )}
               {newSuggestion && (
                 <>
-                  <span className="w-full text-xs text-default-400 mt-1">New topic suggestion:</span>
+                  <span className="w-full text-xs text-default-400 mt-1">
+                    New topic suggestion:
+                  </span>
                   <button
                     type="button"
                     className="rounded-full border border-dashed border-primary/50 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
@@ -148,19 +180,29 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
     <button
       type="button"
       className="flex items-center gap-1 group w-fit"
-      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        setEditing(true)
+      }}
       title="Change topic"
     >
       <span className="rounded-full bg-default-100 px-2.5 py-0.5 text-xs font-medium text-default-600 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
         {course.topic.name}
       </span>
-      <span className="text-xs text-default-400 opacity-0 group-hover:opacity-100 transition-opacity">✎</span>
+      <span className="text-xs text-default-400 opacity-0 group-hover:opacity-100 transition-opacity">
+        ✎
+      </span>
     </button>
   ) : (
     <button
       type="button"
       className="flex items-center gap-1 rounded-full border border-dashed border-default-300 px-2.5 py-0.5 text-xs text-default-400 hover:border-primary hover:text-primary transition-colors w-fit"
-      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        setEditing(true)
+      }}
     >
       + Add topic
     </button>
@@ -209,7 +251,8 @@ function CourseCard({
               <h3 className="line-clamp-2 text-sm font-semibold hover:text-primary transition-colors">
                 {course.title || (
                   <span className="inline-flex items-baseline">
-                    Generating title<AnimatedDots />
+                    Generating title
+                    <AnimatedDots />
                   </span>
                 )}
               </h3>
@@ -229,7 +272,9 @@ function CourseCard({
           {isReady && milestoneCount > 0 && (
             <div className="mt-2">
               <div className="mb-1 flex justify-between text-xs text-default-500">
-                <span>{completedCount}/{milestoneCount} milestones</span>
+                <span>
+                  {completedCount}/{milestoneCount} milestones
+                </span>
                 <span>{pct}%</span>
               </div>
               <Progress value={pct} size="sm" color="primary" />
@@ -250,7 +295,11 @@ function CourseCard({
                     isDisabled={course.retryCount >= 3}
                     isLoading={retryCourse.isPending && retryCourse.variables?.id === course.id}
                     onPress={() => retryCourse.mutate({ id: course.id })}
-                    title={course.retryCount >= 3 ? "Max retries reached" : `${3 - course.retryCount} retries left`}
+                    title={
+                      course.retryCount >= 3
+                        ? "Max retries reached"
+                        : `${3 - course.retryCount} retries left`
+                    }
                   >
                     Retry {course.retryCount > 0 && `(${3 - course.retryCount} left)`}
                   </Button>
@@ -284,7 +333,9 @@ export default function DashboardPage() {
   const deleteCourse = api.course.delete.useMutation({ onSuccess: () => refetch() })
 
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"ALL" | "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED">("ALL")
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
+  >("ALL")
 
   async function handleSignOut() {
     await signOut()
@@ -298,7 +349,10 @@ export default function DashboardPage() {
     const matchesStatus =
       statusFilter === "ALL" ||
       (statusFilter === "NOT_STARTED" && c.status === "READY" && completed === 0) ||
-      (statusFilter === "IN_PROGRESS" && c.status === "READY" && completed > 0 && completed < total) ||
+      (statusFilter === "IN_PROGRESS" &&
+        c.status === "READY" &&
+        completed > 0 &&
+        completed < total) ||
       (statusFilter === "COMPLETED" && c.status === "READY" && total > 0 && completed >= total)
     return matchesSearch && matchesStatus
   })
@@ -324,15 +378,24 @@ export default function DashboardPage() {
         </Link>
         <div className="flex items-center gap-3">
           {(streak?.currentStreak ?? 0) > 0 && (
-            <div className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold ${
-              streak?.studiedToday
-                ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
-                : "bg-default-100 text-default-400"
-            }`}>
+            <div
+              className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold ${
+                streak?.studiedToday
+                  ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
+                  : "bg-default-100 text-default-400"
+              }`}
+            >
               🔥 {streak?.currentStreak}
             </div>
           )}
-          <Button as={Link} href="/review" size="sm" variant="flat" color={reviewCount > 0 ? "warning" : "default"} className="gap-1.5">
+          <Button
+            as={Link}
+            href="/review"
+            size="sm"
+            variant="flat"
+            color={reviewCount > 0 ? "warning" : "default"}
+            className="gap-1.5"
+          >
             📌 Review
             {reviewCount > 0 && (
               <span className="flex size-4 items-center justify-center rounded-full bg-warning text-[10px] font-bold text-white">
@@ -352,7 +415,12 @@ export default function DashboardPage() {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="User menu">
-              <DropdownItem key="profile" isReadOnly className="gap-2 opacity-100" textValue={session?.user.name ?? ""}>
+              <DropdownItem
+                key="profile"
+                isReadOnly
+                className="gap-2 opacity-100"
+                textValue={session?.user.name ?? ""}
+              >
                 <p className="text-xs font-semibold">{session?.user.name}</p>
                 <p className="text-xs text-default-400">{session?.user.email}</p>
               </DropdownItem>
@@ -385,8 +453,19 @@ export default function DashboardPage() {
               size="sm"
               className="sm:max-w-xs"
               startContent={
-                <svg aria-hidden="true" className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                <svg
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-default-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                  />
                 </svg>
               }
               isClearable
@@ -402,7 +481,13 @@ export default function DashboardPage() {
                   className="cursor-pointer"
                   onClick={() => setStatusFilter(s)}
                 >
-                  {s === "ALL" ? "All" : s === "NOT_STARTED" ? "Not started" : s === "IN_PROGRESS" ? "In progress" : "Completed"}
+                  {s === "ALL"
+                    ? "All"
+                    : s === "NOT_STARTED"
+                      ? "Not started"
+                      : s === "IN_PROGRESS"
+                        ? "In progress"
+                        : "Completed"}
                 </Chip>
               ))}
             </div>
@@ -427,7 +512,9 @@ export default function DashboardPage() {
           <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-divider py-20 text-center">
             <div className="text-5xl">🎬</div>
             <h2 className="text-lg font-semibold">No courses yet</h2>
-            <p className="text-sm text-default-500">Paste a YouTube URL to generate your first course</p>
+            <p className="text-sm text-default-500">
+              Paste a YouTube URL to generate your first course
+            </p>
             <Button as={Link} href="/courses/new" color="primary">
               Create your first course
             </Button>
@@ -438,7 +525,14 @@ export default function DashboardPage() {
           <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-divider py-16 text-center">
             <div className="text-4xl">🔍</div>
             <p className="text-sm text-default-500">No courses match your search.</p>
-            <Button size="sm" variant="flat" onPress={() => { setSearch(""); setStatusFilter("ALL" as const) }}>
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => {
+                setSearch("")
+                setStatusFilter("ALL" as const)
+              }}
+            >
               Clear filters
             </Button>
           </div>

@@ -51,7 +51,8 @@ export type CourseContent = z.infer<typeof CourseContentSchema>
 
 const SYSTEM_PROMPT = `You are an expert instructional designer. Your task is to transform video transcripts into structured, interactive learning courses. Always return valid JSON only — no markdown fences, no extra text.`
 
-const USER_PROMPT = (transcript: string) => `
+const USER_PROMPT = (transcript: string) =>
+  `
 Transform this YouTube video transcript into an interactive course.
 
 TRANSCRIPT:
@@ -122,7 +123,9 @@ export async function generateCourse(transcript: string): Promise<CourseContent>
 
   const text = raw.text.trim()
   // Strip any accidental markdown fences
-  const json = text.startsWith("```") ? text.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "") : text
+  const json = text.startsWith("```")
+    ? text.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "")
+    : text
 
   const parsed: unknown = JSON.parse(json)
   return CourseContentSchema.parse(parsed)

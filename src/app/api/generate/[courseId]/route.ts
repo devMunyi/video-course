@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
+import type { Prisma } from "@/generated/prisma/client"
 import { db } from "@/server/db"
-import { fetchTranscript } from "@/server/services/youtube"
 import { generateCourse } from "@/server/services/claude"
 import { resolveTopicId } from "@/server/services/topic"
-import type { Prisma } from "@/generated/prisma/client"
+import { fetchTranscript } from "@/server/services/youtube"
 
 // Allow long-running generation (up to 5 min on Vercel)
 export const maxDuration = 300

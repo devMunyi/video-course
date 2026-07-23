@@ -1,13 +1,13 @@
 "use client"
 
-import { useParams } from "next/navigation"
-import Link from "next/link"
 import { Button, Chip, Spinner } from "@heroui/react"
 import { ArrowLeft, Printer } from "lucide-react"
+import Link from "next/link"
+import { useParams } from "next/navigation"
 import RichTextEditor from "@/components/editor/RichTextEditor"
 import { ThemeToggle } from "@/components/ThemeToggle"
-import type { CourseContent } from "@/server/services/claude"
 import { isEmptyNote, toEditorHtml } from "@/lib/note-html"
+import type { CourseContent } from "@/server/services/claude"
 import { api } from "@/trpc/react"
 
 export default function CourseNotesPage() {
@@ -44,7 +44,14 @@ export default function CourseNotesPage() {
   return (
     <div className="min-h-screen bg-background">
       <nav className="sticky top-0 z-10 flex items-center gap-3 border-b border-divider bg-background/80 px-6 py-3 backdrop-blur print:hidden">
-        <Button as={Link} href={`/courses/${id}`} size="sm" variant="light" isIconOnly aria-label="Back to course">
+        <Button
+          as={Link}
+          href={`/courses/${id}`}
+          size="sm"
+          variant="light"
+          isIconOnly
+          aria-label="Back to course"
+        >
           <ArrowLeft size={16} />
         </Button>
         <h1 className="min-w-0 flex-1 truncate text-sm font-semibold">{course.title}</h1>
@@ -99,11 +106,7 @@ export default function CourseNotesPage() {
                   </Button>
                 </div>
                 <div className="rounded-xl border border-divider bg-content1 px-4 py-3 print:border-0 print:bg-transparent print:px-0">
-                  <RichTextEditor
-                    value={toEditorHtml(note)}
-                    onChange={() => {}}
-                    editable={false}
-                  />
+                  <RichTextEditor value={toEditorHtml(note)} onChange={() => {}} editable={false} />
                 </div>
               </section>
             ))}

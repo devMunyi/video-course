@@ -1,14 +1,13 @@
-import { z } from "zod"
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
-import { TRPCError } from "@trpc/server"
-import { env } from "@/env"
 import Anthropic from "@anthropic-ai/sdk"
+import { TRPCError } from "@trpc/server"
+import { z } from "zod"
+import { env } from "@/env"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 import { resolveTopicId } from "@/server/services/topic"
 
 const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
 
-const YOUTUBE_URL_REGEX =
-  /(?:v=|\/v\/|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/
+const YOUTUBE_URL_REGEX = /(?:v=|\/v\/|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/
 
 function extractVideoId(url: string): string | null {
   const match = YOUTUBE_URL_REGEX.exec(url)
@@ -78,49 +77,54 @@ export const courseRouter = createTRPCRouter({
     })
   }),
 
-  getById: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const course = await ctx.db.course.findFirst({
-        where: { id: input.id, userId: ctx.session.user.id },
-        include: {
-          progress: { where: { userId: ctx.session.user.id } },
-        },
+  getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const course = await ctx.db.course.findFirst({
+      where: { id: input.id, userId: ctx.session.user.id },
+      include: {
+        progress: { where: { userId: ctx.session.user.id } },
+      },
+    })
+    if (!course) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" })
+    }
+    return course
+  }),
+
+  retry: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const course = await ctx.db.course.findFirst({
+      where: { id: input.id, userId: ctx.session.user.id, status: { in: ["FAILED", "PENDING"] } },
+    })
+    if (!course) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Course not found or not in a retryable state",
       })
-      if (!course) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" })
-      }
-      return course
-    }),
-
-  retry: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const course = await ctx.db.course.findFirst({
-        where: { id: input.id, userId: ctx.session.user.id, status: { in: ["FAILED", "PENDING"] } },
+    }
+    if (course.retryCount >= 3) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Maximum retries (3) reached for this course",
       })
-      if (!course) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not in a retryable state" })
-      }
-      if (course.retryCount >= 3) {
-        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Maximum retries (3) reached for this course" })
-      }
-      if (Date.now() - course.updatedAt.getTime() < 60_000) {
-        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Please wait 1 minute before retrying again" })
-      }
-
-      await ctx.db.course.update({
-        where: { id: input.id },
-        data: { status: "PENDING", errorMsg: null, retryCount: { increment: 1 } },
+    }
+    if (Date.now() - course.updatedAt.getTime() < 60_000) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Please wait 1 minute before retrying again",
       })
+    }
 
-      void fetch(`${env.BETTER_AUTH_URL}/api/generate/${input.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      }).catch(console.error)
+    await ctx.db.course.update({
+      where: { id: input.id },
+      data: { status: "PENDING", errorMsg: null, retryCount: { increment: 1 } },
+    })
 
-      return { success: true }
-    }),
+    void fetch(`${env.BETTER_AUTH_URL}/api/generate/${input.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    }).catch(console.error)
+
+    return { success: true }
+  }),
 
   // Returns DB topics ranked by relevance, or a suggested new topic name if none fit
   suggestTopics: protectedProcedure
@@ -136,16 +140,15 @@ export const courseRouter = createTRPCRouter({
 
       if (!course?.title) return { existing: [], newSuggestion: null }
 
-      const topicList = allTopics
-        .map((t) => `- ${t.name}: ${t.description}`)
-        .join("\n")
+      const topicList = allTopics.map((t) => `- ${t.name}: ${t.description}`).join("\n")
 
       const msg = await anthropic.messages.create({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 120,
-        messages: [{
-          role: "user",
-          content: `You are categorising a learning course. Read the topic descriptions carefully to understand their semantic meaning, then match them to the course content.
+        messages: [
+          {
+            role: "user",
+            content: `You are categorising a learning course. Read the topic descriptions carefully to understand their semantic meaning, then match them to the course content.
 
 Pick up to 3 existing topics that best fit (use the EXACT name as listed). If the course content doesn't fit any existing topic well, suggest one new short topic name (1-3 words) as "NEW:<name>".
 
@@ -156,14 +159,18 @@ ${topicList}
 
 COURSE TITLE: ${course.title}
 COURSE DESCRIPTION: ${course.description ?? ""}`,
-        }],
+          },
+        ],
       })
 
       try {
         let text = msg.content[0]?.type === "text" ? msg.content[0].text.trim() : "[]"
         // Strip markdown fences Claude sometimes adds
         if (text.startsWith("```")) {
-          text = text.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "").trim()
+          text = text
+            .replace(/^```[a-z]*\n?/, "")
+            .replace(/\n?```$/, "")
+            .trim()
         }
         const raw = JSON.parse(text) as string[]
 
@@ -185,10 +192,12 @@ COURSE DESCRIPTION: ${course.description ?? ""}`,
 
   // Assigns an existing topic by id, or creates a new one from a name
   updateTopic: protectedProcedure
-    .input(z.union([
-      z.object({ id: z.string(), topicId: z.string() }),
-      z.object({ id: z.string(), topicName: z.string().min(1).max(50) }),
-    ]))
+    .input(
+      z.union([
+        z.object({ id: z.string(), topicId: z.string() }),
+        z.object({ id: z.string(), topicName: z.string().min(1).max(50) }),
+      ]),
+    )
     .mutation(async ({ ctx, input }) => {
       let topicId: string
 
@@ -224,21 +233,20 @@ COURSE DESCRIPTION: ${course.description ?? ""}`,
       return { isPublic: input.isPublic }
     }),
 
-  getShared: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const course = await ctx.db.course.findFirst({
-        where: { id: input.id, isPublic: true, status: "READY" },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          videoId: true,
-          content: true,
-          topic: { select: { name: true } },
-        },
-      })
-      if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not public" })
-      return course
-    }),
+  getShared: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const course = await ctx.db.course.findFirst({
+      where: { id: input.id, isPublic: true, status: "READY" },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        videoId: true,
+        content: true,
+        topic: { select: { name: true } },
+      },
+    })
+    if (!course)
+      throw new TRPCError({ code: "NOT_FOUND", message: "Course not found or not public" })
+    return course
+  }),
 })

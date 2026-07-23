@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Button, Spinner } from "@heroui/react"
 import { NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react"
 import dynamic from "next/dynamic"
+import { useEffect, useState } from "react"
 import type { DrawingResult } from "./DrawingCanvas"
 
 // Excalidraw is ~600KB and touches `window` — never part of the initial note bundle

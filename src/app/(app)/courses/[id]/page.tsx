@@ -1,8 +1,5 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import Link from "next/link"
 import {
   Button,
   Chip,
@@ -13,25 +10,28 @@ import {
   Progress,
   Spinner,
 } from "@heroui/react"
-import { motion, AnimatePresence } from "framer-motion"
-import { api } from "@/trpc/react"
-import type { CourseContent } from "@/server/services/claude"
-import VideoEmbed from "@/components/course/VideoEmbed"
+import { AnimatePresence, motion } from "framer-motion"
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import toast from "react-hot-toast"
 import { AnimatedDots } from "@/components/AnimatedDots"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import ActiveRecall from "@/components/course/ActiveRecall"
-import Quiz from "@/components/course/Quiz"
-import MilestoneSidebar from "@/components/course/MilestoneSidebar"
-import MilestoneNotes from "@/components/course/MilestoneNotes"
-import StudyMode from "@/components/course/StudyMode"
-import PositionSync from "@/components/course/PositionSync"
-import { VideoPlayerProvider } from "@/components/course/video-player-context"
-import { useNoteDraft } from "@/components/course/use-note-draft"
 import CompletionCertificate from "@/components/course/CompletionCertificate"
+import MilestoneNotes from "@/components/course/MilestoneNotes"
+import MilestoneSidebar from "@/components/course/MilestoneSidebar"
+import PositionSync from "@/components/course/PositionSync"
+import Quiz from "@/components/course/Quiz"
+import StudyMode from "@/components/course/StudyMode"
+import { useNoteDraft } from "@/components/course/use-note-draft"
+import VideoEmbed from "@/components/course/VideoEmbed"
+import { VideoPlayerProvider } from "@/components/course/video-player-context"
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { useSession } from "@/lib/auth-client"
 import { isEmptyNote } from "@/lib/note-html"
 import { loadPosition } from "@/lib/playback-store"
-import { useSession } from "@/lib/auth-client"
-import toast from "react-hot-toast"
+import type { CourseContent } from "@/server/services/claude"
+import { api } from "@/trpc/react"
 
 const POLL_INTERVAL = 3000
 

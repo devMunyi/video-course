@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { Button } from "@heroui/react"
+import { useEffect, useRef, useState } from "react"
 import { useOptionalVideoPlayer } from "./video-player-context"
 
 type Props = {

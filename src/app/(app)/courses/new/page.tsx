@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { z } from "zod"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { Button, Card, CardBody, Input } from "@heroui/react"
-import { api } from "@/trpc/react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import toast from "react-hot-toast"
+import { z } from "zod"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { api } from "@/trpc/react"
 
 const YOUTUBE_REGEX = /(?:v=|\/v\/|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/
 const youtubeSchema = z.url().refine((v) => YOUTUBE_REGEX.test(v))
@@ -69,7 +69,9 @@ export default function NewCoursePage() {
                   size="lg"
                   variant="bordered"
                   isInvalid={isDirty && !isValid}
-                  errorMessage={isDirty && !isValid ? "Please enter a valid YouTube URL" : undefined}
+                  errorMessage={
+                    isDirty && !isValid ? "Please enter a valid YouTube URL" : undefined
+                  }
                   color={isDirty ? (isValid ? "success" : "danger") : "default"}
                   startContent={
                     <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5 fill-red-500">

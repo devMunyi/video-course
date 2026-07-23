@@ -1,14 +1,6 @@
 "use client"
 
-import { useRef } from "react"
-import {
-  Button,
-  Divider,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Tooltip,
-} from "@heroui/react"
+import { Button, Divider, Popover, PopoverContent, PopoverTrigger, Tooltip } from "@heroui/react"
 import type { Editor } from "@tiptap/react"
 import { useEditorState } from "@tiptap/react"
 import {
@@ -34,6 +26,7 @@ import {
   Underline as UnderlineIcon,
   Undo2,
 } from "lucide-react"
+import { useRef } from "react"
 import { insertImageFiles } from "./insert-image"
 
 type Props = {
@@ -324,10 +317,7 @@ export default function EditorToolbar({
       >
         <Quote size={16} />
       </ToolButton>
-      <ToolButton
-        label="Divider"
-        onPress={() => editor.chain().focus().setHorizontalRule().run()}
-      >
+      <ToolButton label="Divider" onPress={() => editor.chain().focus().setHorizontalRule().run()}>
         <Minus size={16} />
       </ToolButton>
 
@@ -347,14 +337,14 @@ export default function EditorToolbar({
       >
         <TableIcon size={16} />
       </ToolButton>
-      <ToolButton label="Insert drawing" onPress={() => editor.chain().focus().insertDrawing().run()}>
+      <ToolButton
+        label="Insert drawing"
+        onPress={() => editor.chain().focus().insertDrawing().run()}
+      >
         <Pencil size={16} />
       </ToolButton>
       {onInsertTimestamp && (
-        <ToolButton
-          label="Stamp video time (Ctrl+Shift+T)"
-          onPress={onInsertTimestamp}
-        >
+        <ToolButton label="Stamp video time (Ctrl+Shift+T)" onPress={onInsertTimestamp}>
           <Clock size={16} />
         </ToolButton>
       )}

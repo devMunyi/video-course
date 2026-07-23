@@ -39,19 +39,22 @@ export function useRemotePositionSync({ courseId, milestoneId, getCurrentTime }:
   saveRef.current = save
   const lastSentRef = useRef<{ milestoneId: string; seconds: number } | null>(null)
 
-  const flush = useCallback((force = false) => {
-    const milestone = milestoneRef.current
-    const seconds = getTimeRef.current?.()
-    if (!milestone || typeof seconds !== "number" || seconds <= 0) return
+  const flush = useCallback(
+    (force = false) => {
+      const milestone = milestoneRef.current
+      const seconds = getTimeRef.current?.()
+      if (!milestone || typeof seconds !== "number" || seconds <= 0) return
 
-    const last = lastSentRef.current
-    const sameSection = last?.milestoneId === milestone
-    if (!force && sameSection && Math.abs((last?.seconds ?? 0) - seconds) < MIN_DELTA_SEC) return
+      const last = lastSentRef.current
+      const sameSection = last?.milestoneId === milestone
+      if (!force && sameSection && Math.abs((last?.seconds ?? 0) - seconds) < MIN_DELTA_SEC) return
 
-    const rounded = Math.floor(seconds)
-    lastSentRef.current = { milestoneId: milestone, seconds: rounded }
-    saveRef.current.mutate({ courseId, milestoneId: milestone, seconds: rounded })
-  }, [courseId])
+      const rounded = Math.floor(seconds)
+      lastSentRef.current = { milestoneId: milestone, seconds: rounded }
+      saveRef.current.mutate({ courseId, milestoneId: milestone, seconds: rounded })
+    },
+    [courseId],
+  )
 
   // Slow heartbeat while the page is open
   useEffect(() => {

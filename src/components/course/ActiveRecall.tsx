@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
 import { Button, Card, CardBody, Chip } from "@heroui/react"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
+import { useState } from "react"
 
 type ARQuestion = {
   id: string
@@ -38,7 +38,9 @@ export default function ActiveRecall({ questions, savedScores, onScore, isSaving
     <div className="flex flex-col gap-4">
       <h3 className="flex items-center gap-2 text-base font-semibold">
         <span>🎯</span> Active Recall
-        <Chip size="sm" variant="flat" color="secondary">{questions.length} questions</Chip>
+        <Chip size="sm" variant="flat" color="secondary">
+          {questions.length} questions
+        </Chip>
       </h3>
       {questions.map((q, i) => {
         const isRevealed = revealed.has(q.id)
@@ -53,11 +55,7 @@ export default function ActiveRecall({ questions, savedScores, onScore, isSaving
               </p>
 
               {score && (
-                <Chip
-                  size="sm"
-                  color={score === "got_it" ? "success" : "warning"}
-                  variant="flat"
-                >
+                <Chip size="sm" color={score === "got_it" ? "success" : "warning"} variant="flat">
                   {score === "got_it" ? "✓ Got it" : "📌 Needs review"}
                 </Chip>
               )}

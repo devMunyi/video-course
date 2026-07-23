@@ -31,7 +31,12 @@ export function toEditorHtml(note: string): string {
 export function isEmptyNote(note: string | undefined | null): boolean {
   if (!note) return true
   if (/<(img|excalidraw-drawing|hr|table)\b/i.test(note)) return false
-  return note.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length === 0
+  return (
+    note
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim().length === 0
+  )
 }
 
 /** Plain-text preview of a note, for search/summaries. */

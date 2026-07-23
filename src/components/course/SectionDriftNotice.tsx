@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Button } from "@heroui/react"
 import { ArrowRight } from "lucide-react"
+import { useEffect, useState } from "react"
 import { usePlayingSection } from "./use-playing-section"
 
 type SectionLike = { id: string; title: string; timestamp_start: string; timestamp_end: string }

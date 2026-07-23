@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { Button } from "@heroui/react"
+import Link from "next/link"
 
 export default function CourseError({ error }: { error: Error & { digest?: string } }) {
   return (
@@ -11,9 +11,7 @@ export default function CourseError({ error }: { error: Error & { digest?: strin
       <p className="max-w-sm text-sm text-default-500 font-mono bg-default-100 rounded-lg p-3">
         {error.message || "Unknown error"}
       </p>
-      {error.digest && (
-        <p className="text-xs text-default-400">Digest: {error.digest}</p>
-      )}
+      {error.digest && <p className="text-xs text-default-400">Digest: {error.digest}</p>}
       <Button as={Link} href="/dashboard" color="primary">
         Back to dashboard
       </Button>

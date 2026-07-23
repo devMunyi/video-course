@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useState } from "react"
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react"
 import { toPng } from "html-to-image"
+import { useRef, useState } from "react"
 
 type Props = {
   isOpen: boolean
@@ -12,7 +12,13 @@ type Props = {
   completedAt: Date
 }
 
-export default function CompletionCertificate({ isOpen, onClose, courseTitle, userName, completedAt }: Props) {
+export default function CompletionCertificate({
+  isOpen,
+  onClose,
+  courseTitle,
+  userName,
+  completedAt,
+}: Props) {
   const certRef = useRef<HTMLDivElement>(null)
   const [downloading, setDownloading] = useState(false)
 
@@ -65,12 +71,16 @@ export default function CompletionCertificate({ isOpen, onClose, courseTitle, us
               <div className="my-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
               <p className="text-xs text-default-400">{dateStr}</p>
-              <p className="mt-3 text-xs font-semibold tracking-wider text-default-400">VideoCourse</p>
+              <p className="mt-3 text-xs font-semibold tracking-wider text-default-400">
+                VideoCourse
+              </p>
             </div>
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" onPress={onClose}>Close</Button>
+          <Button variant="ghost" onPress={onClose}>
+            Close
+          </Button>
           <Button color="primary" isLoading={downloading} onPress={handleDownload}>
             Download PNG
           </Button>
