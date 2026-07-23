@@ -8,3 +8,4 @@ prisma/migrations/
 src/generated/
 .env*
 .claude/
+tsconfig.tsbuildinfo
