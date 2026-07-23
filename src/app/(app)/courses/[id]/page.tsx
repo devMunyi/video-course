@@ -407,6 +407,9 @@ export default function CoursePage() {
                     onChange={noteDraft.onChange}
                     status={noteDraft.status}
                     onOpenStudyMode={() => setStudyMode(true)}
+                    milestones={milestones}
+                    currentIndex={currentMilestoneIndex}
+                    onSelectMilestone={goToMilestone}
                   />
 
                   {/* Key concepts */}

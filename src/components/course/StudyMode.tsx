@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
   Button,
-  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
 } from "@heroui/react"
 import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react"
 import RichTextEditor from "@/components/editor/RichTextEditor"
+import SectionDriftNotice from "./SectionDriftNotice"
 import VideoEmbed from "./VideoEmbed"
 import { useVideoPlayer } from "./video-player-context"
 
@@ -124,9 +124,12 @@ export default function StudyMode({
     <div className="fixed inset-0 z-40 flex flex-col bg-background">
       {/* Header */}
       <div className="flex shrink-0 items-center gap-3 border-b border-divider px-4 py-2">
-        <Chip size="sm" variant="flat" color="primary" className="shrink-0">
-          {index + 1} / {total}
-        </Chip>
+        {/* Full wording where there's room, bare count when space is tight */}
+        <span className="shrink-0 whitespace-nowrap text-xs text-default-500">
+          <span className="hidden md:inline">Showing section </span>
+          <strong className="text-foreground">{index + 1}</strong> of {total}
+          <span className="hidden md:inline"> section{total === 1 ? "" : "s"}</span>
+        </span>
 
         {/* Jump to any milestone without leaving study mode */}
         <Dropdown placement="bottom-start">
@@ -167,23 +170,25 @@ export default function StudyMode({
         <span className="hidden shrink-0 text-xs text-default-400 sm:inline">{status}</span>
         <Button
           size="sm"
-          variant="light"
-          isIconOnly
-          aria-label="Previous milestone"
+          variant="flat"
+          className="shrink-0 px-2"
+          aria-label="Previous section"
           isDisabled={index === 0}
+          startContent={<ChevronLeft size={15} />}
           onPress={() => onSelectMilestone(index - 1)}
         >
-          <ChevronLeft size={16} />
+          <span className="hidden sm:inline">Previous</span>
         </Button>
         <Button
           size="sm"
-          variant="light"
-          isIconOnly
-          aria-label="Next milestone"
+          variant="flat"
+          className="shrink-0 px-2"
+          aria-label="Next section"
           isDisabled={index === total - 1}
+          endContent={<ChevronRight size={15} />}
           onPress={() => onSelectMilestone(index + 1)}
         >
-          <ChevronRight size={16} />
+          <span className="hidden sm:inline">Next</span>
         </Button>
         <Button size="sm" variant="flat" startContent={<X size={15} />} onPress={onExit}>
           Exit
@@ -246,7 +251,12 @@ export default function StudyMode({
           }}
         />
 
-        <div className="flex min-h-0 flex-1 flex-col p-4 pt-0 lg:pt-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-2 p-4 pt-0 lg:pt-4">
+          <SectionDriftNotice
+            milestones={milestones}
+            currentIndex={index}
+            onSelectMilestone={onSelectMilestone}
+          />
           <RichTextEditor
             value={note}
             onChange={onNoteChange}
