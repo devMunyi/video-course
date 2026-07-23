@@ -29,9 +29,14 @@ const VideoPlayerContext = createContext<VideoPlayerContextValue | null>(null)
 
 export function VideoPlayerProvider({
   courseId,
+  remoteMilestoneId,
+  remoteSeconds,
   children,
 }: {
   courseId: string
+  /** Position last saved from any device, used when this one has nothing stored. */
+  remoteMilestoneId?: string | null
+  remoteSeconds?: number | null
   children: ReactNode
 }) {
   const controlsRef = useRef<Controls | null>(null)
@@ -57,9 +62,15 @@ export function VideoPlayerProvider({
   )
 
   const restore = useCallback(() => {
+    // This device's own position is always at least as fresh as the synced one
     const stored = loadPosition(courseId)
-    return stored ? { milestoneId: stored.milestoneId, seconds: stored.seconds } : null
-  }, [courseId])
+    if (stored) return { milestoneId: stored.milestoneId, seconds: stored.seconds }
+    // Nothing local: first visit on this device, so fall back to what was synced
+    if (remoteMilestoneId && typeof remoteSeconds === "number" && remoteSeconds > 0) {
+      return { milestoneId: remoteMilestoneId, seconds: remoteSeconds }
+    }
+    return null
+  }, [courseId, remoteMilestoneId, remoteSeconds])
 
   const value = useMemo(
     () => ({ register, lastTimeRef, getCurrentTime, seekTo, persist, restore }),

@@ -110,6 +110,11 @@ model UserProgress {
   recallReviewDates   Json     @default("{}")
   completedMilestones String[] @default([])
   milestoneNotes      Json     @default("{}")
+  // Where the learner left off, so a different device can pick the course back up.
+  // Written rarely (section change, tab hidden, ~60s while playing); localStorage
+  // carries the second-by-second position on the device itself.
+  lastMilestoneId     String?
+  lastPositionSec     Int?
   updatedAt           DateTime @updatedAt
 
   @@unique([userId, courseId])

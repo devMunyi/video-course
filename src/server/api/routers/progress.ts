@@ -98,6 +98,40 @@ export const progressRouter = createTRPCRouter({
       })
     }),
 
+  /**
+   * Records where the learner left off so another device can resume.
+   *
+   * Deliberately separate from `upsert`: that one reads the row, reads the user,
+   * may write the streak and then upserts — three or four statements. This is a
+   * single upsert with no reads and no side effects, because the client calls it
+   * on a slow timer. The client also throttles hard (see useRemotePositionSync),
+   * so a full viewing session is a handful of writes, not one per second.
+   */
+  savePosition: protectedProcedure
+    .input(
+      z.object({
+        courseId: z.string(),
+        milestoneId: z.string(),
+        seconds: z.number().int().min(0).max(24 * 60 * 60),
+      }),
+    )
+    .mutation(({ ctx, input }) =>
+      ctx.db.userProgress.upsert({
+        where: { userId_courseId: { userId: ctx.session.user.id, courseId: input.courseId } },
+        create: {
+          userId: ctx.session.user.id,
+          courseId: input.courseId,
+          lastMilestoneId: input.milestoneId,
+          lastPositionSec: input.seconds,
+        },
+        update: {
+          lastMilestoneId: input.milestoneId,
+          lastPositionSec: input.seconds,
+        },
+        select: { id: true },
+      }),
+    ),
+
   getStreak: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({
       where: { id: ctx.session.user.id },

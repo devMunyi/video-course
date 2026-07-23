@@ -1070,6 +1070,8 @@ export const UserProgressScalarFieldEnum = {
   recallReviewDates: 'recallReviewDates',
   completedMilestones: 'completedMilestones',
   milestoneNotes: 'milestoneNotes',
+  lastMilestoneId: 'lastMilestoneId',
+  lastPositionSec: 'lastPositionSec',
   updatedAt: 'updatedAt'
 } as const
 
