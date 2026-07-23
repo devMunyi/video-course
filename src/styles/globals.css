@@ -14,7 +14,9 @@ html {
 }
 
 body {
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1;
 }
 
 ::-webkit-scrollbar {
@@ -32,4 +34,152 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-default-400;
+}
+
+/* ─── Study mode ──────────────────────────────────────────────────────────── */
+
+/* Split position is driven by --split, set by the drag handle */
+@media (min-width: 1024px) {
+  .study-video-pane {
+    width: var(--split, 50%);
+    max-width: var(--split, 50%);
+    flex-shrink: 0;
+  }
+}
+
+/* ─── Rich note editor ────────────────────────────────────────────────────── */
+
+.note-prose {
+  @apply text-sm leading-relaxed text-foreground;
+}
+
+.note-prose > * + * {
+  @apply mt-3;
+}
+
+.note-prose h1 {
+  @apply mt-6 text-2xl font-bold tracking-tight;
+}
+
+.note-prose h2 {
+  @apply mt-5 text-xl font-bold tracking-tight;
+}
+
+.note-prose h3 {
+  @apply mt-4 text-base font-semibold;
+}
+
+.note-prose p {
+  @apply min-h-[1.5em];
+}
+
+.note-prose ul {
+  @apply list-disc pl-5;
+}
+
+.note-prose ol {
+  @apply list-decimal pl-5;
+}
+
+.note-prose li > p {
+  @apply my-0;
+}
+
+.note-prose li {
+  @apply my-0.5;
+}
+
+.note-prose blockquote {
+  @apply border-l-4 border-primary/40 pl-4 italic text-default-600;
+}
+
+.note-prose a {
+  @apply text-primary underline underline-offset-2;
+}
+
+.note-prose code {
+  @apply rounded bg-default-100 px-1 py-0.5 font-mono text-[0.85em];
+}
+
+.note-prose pre,
+.note-prose .note-code-block {
+  @apply overflow-x-auto rounded-lg bg-default-100 p-3 font-mono text-xs;
+}
+
+.note-prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.note-prose hr {
+  @apply my-6 border-t border-divider;
+}
+
+.note-prose img {
+  @apply my-3 max-w-full rounded-lg;
+}
+
+.note-prose mark {
+  @apply rounded px-0.5 text-black;
+}
+
+/* Checklists */
+.note-prose ul[data-type="taskList"] {
+  @apply list-none pl-0;
+}
+
+.note-prose ul[data-type="taskList"] li {
+  @apply flex items-start gap-2;
+}
+
+.note-prose ul[data-type="taskList"] li > label {
+  @apply mt-0.5 shrink-0 select-none;
+}
+
+.note-prose ul[data-type="taskList"] li > div {
+  @apply min-w-0 flex-1;
+}
+
+.note-prose ul[data-type="taskList"] li[data-checked="true"] > div {
+  @apply text-default-400 line-through;
+}
+
+/* Tables */
+.note-prose table {
+  @apply w-full table-fixed border-collapse overflow-hidden text-sm;
+}
+
+.note-prose th,
+.note-prose td {
+  @apply border border-divider px-2 py-1 align-top;
+}
+
+.note-prose th {
+  @apply bg-default-100 font-semibold;
+}
+
+.note-prose .selectedCell::after {
+  @apply pointer-events-none absolute inset-0 bg-primary/10 content-[''];
+}
+
+.note-prose .column-resize-handle {
+  @apply absolute -bottom-px -right-0.5 top-0 w-1 bg-primary;
+}
+
+/* Video timestamps */
+.note-timestamp {
+  @apply mx-0.5 cursor-pointer select-none rounded bg-primary/15 px-1.5 py-0.5 align-baseline font-mono text-xs text-primary;
+}
+
+.note-timestamp:hover {
+  @apply bg-primary/30;
+}
+
+/* Placeholder */
+.note-prose p.is-editor-empty:first-child::before {
+  @apply pointer-events-none float-left h-0 text-default-400 content-[attr(data-placeholder)];
+}
+
+/* Selected block nodes (drawings, images) */
+.note-prose .ProseMirror-selectednode {
+  @apply outline-2 outline-primary;
 }

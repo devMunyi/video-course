@@ -1,6 +1,6 @@
 # VideoCourse
 
-Turn any YouTube video into an interactive course — structured milestones, active recall questions, quizzes, spaced repetition, and progress tracking, generated in under a minute using AI.
+Turn any YouTube video into an interactive course — strucrepetition, and progress tracking, generated in under a minutetured milestones, active recall questions, quizzes, spaced  using AI.
 
 ## Features
 
