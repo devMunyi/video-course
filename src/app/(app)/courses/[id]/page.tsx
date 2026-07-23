@@ -74,7 +74,6 @@ function FailedState({ courseId, errorMsg }: { courseId: string; errorMsg: strin
 
 export default function CoursePage() {
   const { id } = useParams<{ id: string }>()
-  const router = useRouter()
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
@@ -418,8 +417,8 @@ export default function CoursePage() {
                       <span>💡</span> Key Concepts
                     </h3>
                     <ul className="flex flex-col gap-2">
-                      {currentMilestone.key_concepts.map((concept, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
+                      {currentMilestone.key_concepts.map((concept) => (
+                        <li key={concept} className="flex items-start gap-2 text-sm">
                           <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary" />
                           {concept}
                         </li>
@@ -473,6 +472,7 @@ export default function CoursePage() {
       {/* Mobile milestone bar */}
       <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-divider bg-background/90 backdrop-blur lg:hidden">
         <button
+          type="button"
           onClick={() => setMobileDrawerOpen(true)}
           className="flex w-full items-center gap-3 px-4 py-3 text-left"
         >
@@ -491,7 +491,7 @@ export default function CoursePage() {
               Milestone {currentMilestoneIndex + 1} of {milestones.length} · {totalPct}% complete
             </p>
           </div>
-          <svg className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg aria-hidden="true" className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>

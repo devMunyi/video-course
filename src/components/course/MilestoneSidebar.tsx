@@ -1,7 +1,5 @@
 "use client"
 
-import { Button } from "@heroui/react"
-
 type Milestone = {
   id: string
   title: string
@@ -30,6 +28,7 @@ export default function MilestoneSidebar({ milestones, currentIndex, completedId
 
         return (
           <button
+            type="button"
             key={m.id}
             onClick={() => onSelect(i)}
             className={`flex items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors ${

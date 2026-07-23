@@ -65,6 +65,7 @@ export default function SharePage() {
           </p>
           {milestones.map((m, i) => (
             <button
+              type="button"
               key={m.id}
               onClick={() => setCurrentIndex(i)}
               className={`flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors ${
@@ -122,8 +123,8 @@ export default function SharePage() {
                       <span>💡</span> Key Concepts
                     </h3>
                     <ul className="flex flex-col gap-2">
-                      {currentMilestone.key_concepts.map((concept, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
+                      {currentMilestone.key_concepts.map((concept) => (
+                        <li key={concept} className="flex items-start gap-2 text-sm">
                           <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary" />
                           {concept}
                         </li>

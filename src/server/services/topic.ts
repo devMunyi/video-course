@@ -36,7 +36,6 @@ export async function resolveTopicId(
   if (answer.startsWith("```")) {
     answer = answer.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "").trim()
   }
-  const topicNames = allTopics.map((t) => t.name)
 
   // Case-insensitive match in case Claude changes capitalisation
   const matched = allTopics.find((t) => t.name.toLowerCase() === answer.toLowerCase())

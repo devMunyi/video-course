@@ -129,9 +129,16 @@ export default function VideoEmbed({
           videoId,
           playerVars: {
             start: startAt,
+            // Keep end-screen suggestions within the same channel
             rel: 0,
-            modestbranding: 1,
+            // Hide the creator's annotations and info cards
+            iv_load_policy: 3,
+            // Don't let the video take over the page's arrow keys — those move milestones
+            disablekb: 1,
             playsinline: 1,
+            // NOTE: modestbranding was retired by YouTube in 2023 and is a no-op.
+            // The title bar and "Watch on YouTube" shown while paused are mandatory
+            // for the free embed and cannot be removed by any player parameter.
           },
           events: {
             onReady: () => {

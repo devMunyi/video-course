@@ -49,6 +49,8 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
     { id: course.id },
     { enabled: editing, staleTime: 0, retry: 1 },
   )
+  // Bound to a const so the narrowing survives into the click handler
+  const newSuggestion = suggestData?.newSuggestion ?? null
 
   const updateTopic = api.course.updateTopic.useMutation({
     onSuccess: () => { onUpdated(); setEditing(false) },
@@ -66,6 +68,8 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
 
   if (editing) {
     return (
+      // biome-ignore lint/a11y/noStaticElementInteractions: shields the parent card's click handler; not itself interactive
+      // biome-ignore lint/a11y/useKeyWithClickEvents: nothing is activated here, the inner controls own keyboard interaction
       <div className="flex flex-col gap-2 py-1" onClick={(e) => { e.stopPropagation(); e.preventDefault() }}>
         <form
           className="flex items-center gap-1"
@@ -109,8 +113,9 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
               {(suggestData?.existing ?? []).length > 0 && (
                 <>
                   <span className="w-full text-xs text-default-400">Suggested from your topics:</span>
-                  {suggestData!.existing.map((s) => (
+                  {(suggestData?.existing ?? []).map((s) => (
                     <button
+                      type="button"
                       key={s.id}
                       className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
                       onClick={() => saveById(s.id)}
@@ -120,14 +125,15 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
                   ))}
                 </>
               )}
-              {suggestData?.newSuggestion && (
+              {newSuggestion && (
                 <>
                   <span className="w-full text-xs text-default-400 mt-1">New topic suggestion:</span>
                   <button
+                    type="button"
                     className="rounded-full border border-dashed border-primary/50 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
-                    onClick={() => saveByName(suggestData.newSuggestion!)}
+                    onClick={() => saveByName(newSuggestion)}
                   >
-                    + {suggestData.newSuggestion}
+                    + {newSuggestion}
                   </button>
                 </>
               )}
@@ -140,6 +146,7 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
 
   return course.topic ? (
     <button
+      type="button"
       className="flex items-center gap-1 group w-fit"
       onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
       title="Change topic"
@@ -151,6 +158,7 @@ function TopicLabel({ course, onUpdated }: { course: Course; onUpdated: () => vo
     </button>
   ) : (
     <button
+      type="button"
       className="flex items-center gap-1 rounded-full border border-dashed border-default-300 px-2.5 py-0.5 text-xs text-default-400 hover:border-primary hover:text-primary transition-colors w-fit"
       onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEditing(true) }}
     >
@@ -231,6 +239,8 @@ function CourseCard({
           <div className="mt-2 flex items-center justify-between">
             <p className="text-xs text-default-400">{dayjs(course.createdAt).fromNow()}</p>
             {!isReady && (
+              // biome-ignore lint/a11y/noStaticElementInteractions: shields the parent card's click handler; not itself interactive
+              // biome-ignore lint/a11y/useKeyWithClickEvents: nothing is activated here, the inner buttons own keyboard interaction
               <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                 {(course.status === "FAILED" || course.status === "PENDING") && (
                   <Button
@@ -375,7 +385,7 @@ export default function DashboardPage() {
               size="sm"
               className="sm:max-w-xs"
               startContent={
-                <svg className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg aria-hidden="true" className="size-4 shrink-0 text-default-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
                 </svg>
               }
@@ -401,8 +411,8 @@ export default function DashboardPage() {
 
         {isLoading && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="animate-pulse">
+            {["a", "b", "c"].map((slot) => (
+              <Card key={slot} className="animate-pulse">
                 <CardBody className="gap-3 p-4">
                   <div className="h-36 rounded-lg bg-default-200" />
                   <div className="h-4 w-3/4 rounded bg-default-200" />

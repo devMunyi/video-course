@@ -136,7 +136,6 @@ export const courseRouter = createTRPCRouter({
 
       if (!course?.title) return { existing: [], newSuggestion: null }
 
-      const topicNames = allTopics.map((t) => t.name)
       const topicList = allTopics
         .map((t) => `- ${t.name}: ${t.description}`)
         .join("\n")

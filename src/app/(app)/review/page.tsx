@@ -46,10 +46,16 @@ export default function ReviewPage() {
   }
 
   // Group due items by course
-  const grouped = (dueItems ?? []).reduce<Record<string, { courseTitle: string; items: typeof dueItems }>>(
+  const grouped = (dueItems ?? []).reduce<
+    Record<string, { courseTitle: string; items: NonNullable<typeof dueItems> }>
+  >(
     (acc, item) => {
-      if (!acc[item.courseId]) acc[item.courseId] = { courseTitle: item.courseTitle, items: [] }
-      acc[item.courseId]!.items!.push(item)
+      let group = acc[item.courseId]
+      if (!group) {
+        group = { courseTitle: item.courseTitle, items: [] }
+        acc[item.courseId] = group
+      }
+      group.items.push(item)
       return acc
     },
     {},
@@ -99,11 +105,11 @@ export default function ReviewPage() {
                     {courseTitle}
                   </Link>
                   <Chip size="sm" variant="flat" color="warning">
-                    {items!.length}
+                    {items.length}
                   </Chip>
                 </div>
 
-                {items!.map((item, i) => {
+                {items.map((item, i) => {
                   const isRevealed = revealed.has(item.id)
                   return (
                     <Card key={item.id} className="border border-divider">

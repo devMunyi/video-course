@@ -23,13 +23,11 @@ export const reviewRouter = createTRPCRouter({
 
       const allQuestions = content.milestones.flatMap((m) => m.active_recall)
       return allQuestions
-        .filter((q) => dueIds.includes(q.id))
-        .map((q) => ({
-          ...q,
-          courseId: p.courseId,
-          courseTitle: p.course.title,
-          dueAt: reviewDates[q.id]!,
-        }))
+        .flatMap((q) => {
+          const dueAt = reviewDates[q.id]
+          if (!dueIds.includes(q.id) || !dueAt) return []
+          return [{ ...q, courseId: p.courseId, courseTitle: p.course.title, dueAt }]
+        })
     })
   }),
 
