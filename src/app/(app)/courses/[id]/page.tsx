@@ -14,7 +14,11 @@ import ActiveRecall from "@/components/course/ActiveRecall"
 import Quiz from "@/components/course/Quiz"
 import MilestoneSidebar from "@/components/course/MilestoneSidebar"
 import MilestoneNotes from "@/components/course/MilestoneNotes"
+import StudyMode from "@/components/course/StudyMode"
+import { VideoPlayerProvider } from "@/components/course/video-player-context"
+import { useNoteDraft } from "@/components/course/use-note-draft"
 import CompletionCertificate from "@/components/course/CompletionCertificate"
+import { isEmptyNote } from "@/lib/note-html"
 import { useSession } from "@/lib/auth-client"
 import toast from "react-hot-toast"
 
@@ -73,6 +77,7 @@ export default function CoursePage() {
   const [currentMilestoneIndex, setCurrentMilestoneIndex] = useState(0)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
+  const [studyMode, setStudyMode] = useState(false)
   const { data: session } = useSession()
 
   const utils = api.useUtils()
@@ -183,6 +188,22 @@ export default function CoursePage() {
     [id, upsertProgress],
   )
 
+  // Single autosave owner for the note, shared by the inline editor and study mode
+  const noteDraft = useNoteDraft({
+    milestoneId: currentMilestone?.id ?? "",
+    savedNote: currentMilestone ? (milestoneNotes[currentMilestone.id] ?? "") : "",
+    onSave: handleSaveNote,
+    isSaving: upsertProgress.isPending,
+  })
+
+  const goToMilestone = useCallback(
+    (next: number) => {
+      setCurrentMilestoneIndex(next)
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    },
+    [],
+  )
+
   const handleCompleteMilestone = useCallback(() => {
     if (!currentMilestone) return
     const isAlreadyDone = completedMilestones.includes(currentMilestone.id)
@@ -260,7 +281,22 @@ export default function CoursePage() {
 
   // Ready state
   return (
+    <VideoPlayerProvider>
     <div className="flex min-h-screen flex-col bg-background">
+      {studyMode && currentMilestone && (
+        <StudyMode
+          videoId={course.videoId}
+          milestone={currentMilestone}
+          index={currentMilestoneIndex}
+          total={milestones.length}
+          note={noteDraft.value}
+          onNoteChange={noteDraft.onChange}
+          status={noteDraft.status}
+          onPrev={() => goToMilestone(Math.max(0, currentMilestoneIndex - 1))}
+          onNext={() => goToMilestone(Math.min(milestones.length - 1, currentMilestoneIndex + 1))}
+          onExit={() => setStudyMode(false)}
+        />
+      )}
       {/* Top bar */}
       <nav className="sticky top-0 z-10 flex items-center gap-4 border-b border-divider bg-background/80 px-6 py-3 backdrop-blur">
         <Link href="/dashboard" className="text-sm font-bold text-primary">
@@ -269,6 +305,9 @@ export default function CoursePage() {
         <span className="text-default-300">/</span>
         <h1 className="flex-1 truncate text-sm font-medium">{course.title}</h1>
         <div className="flex items-center gap-3">
+          <Button size="sm" variant="flat" color="primary" onPress={() => setStudyMode(true)}>
+            Study mode
+          </Button>
           <Button
             size="sm"
             variant={course.isPublic ? "flat" : "ghost"}
@@ -298,7 +337,7 @@ export default function CoursePage() {
             milestones={milestones}
             currentIndex={currentMilestoneIndex}
             completedIds={completedMilestones}
-            noteIds={Object.keys(milestoneNotes).filter((id) => milestoneNotes[id]?.trim())}
+            noteIds={Object.keys(milestoneNotes).filter((id) => !isEmptyNote(milestoneNotes[id]))}
             onSelect={setCurrentMilestoneIndex}
           />
 
@@ -329,6 +368,7 @@ export default function CoursePage() {
                   <VideoEmbed
                     videoId={course.videoId}
                     startTimestamp={currentMilestone.timestamp_start}
+                    sectionKey={currentMilestone.id}
                   />
 
                   {/* Milestone header */}
@@ -377,10 +417,10 @@ export default function CoursePage() {
 
                   {/* Notes */}
                   <MilestoneNotes
-                    milestoneId={currentMilestone.id}
-                    savedNote={milestoneNotes[currentMilestone.id] ?? ""}
-                    onSave={handleSaveNote}
-                    isSaving={upsertProgress.isPending}
+                    value={noteDraft.value}
+                    onChange={noteDraft.onChange}
+                    status={noteDraft.status}
+                    onOpenStudyMode={() => setStudyMode(true)}
                   />
 
                   {/* Navigation */}
@@ -463,7 +503,7 @@ export default function CoursePage() {
               milestones={milestones}
               currentIndex={currentMilestoneIndex}
               completedIds={completedMilestones}
-              noteIds={Object.keys(milestoneNotes).filter((id) => milestoneNotes[id]?.trim())}
+              noteIds={Object.keys(milestoneNotes).filter((id) => !isEmptyNote(milestoneNotes[id]))}
               onSelect={(i) => {
                 setCurrentMilestoneIndex(i)
                 setMobileDrawerOpen(false)
@@ -479,5 +519,6 @@ export default function CoursePage() {
         </DrawerContent>
       </Drawer>
     </div>
+    </VideoPlayerProvider>
   )
 }
