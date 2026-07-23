@@ -38,14 +38,28 @@ export default function SectionDriftNotice({
   const drifted = playingIndex !== null && playingIndex !== currentIndex
   const playing = playingIndex === null ? null : milestones[playingIndex]
 
+  // An explicit Next/Prev/dropdown seeks the video to the new section, but that
+  // takes a moment. Until playback reaches the chosen section, the player still
+  // reports the old position — follow must not read that and drag us back.
+  // The last section the video was confirmed to be playing. When the user
+  // navigates, currentIndex moves ahead of this until playback catches up, so
+  // `settled` is false during the seek and follow stays quiet.
+  const [settledIndex, setSettledIndex] = useState<number | null>(null)
+  useEffect(() => {
+    if (playingIndex === currentIndex) setSettledIndex(currentIndex)
+  }, [playingIndex, currentIndex])
+  const settled = settledIndex === currentIndex
+
   // Auto-follow never interrupts typing — switching mid-sentence would move the
   // caret into a different note
   useEffect(() => {
     if (!follow || !drifted || playingIndex === null) return
+    // Don't override a navigation the video hasn't caught up to yet
+    if (!settled) return
     const active = document.activeElement as HTMLElement | null
     if (active?.isContentEditable) return
     onSelectMilestone(playingIndex)
-  }, [follow, drifted, playingIndex, onSelectMilestone])
+  }, [follow, drifted, playingIndex, settled, onSelectMilestone])
 
   function toggleFollow() {
     setFollow((prev) => {

@@ -382,7 +382,10 @@ export default function CoursePage() {
           </div>
         </nav>
 
-        {/* Main layout */}
+        {/* Main layout — not rendered while study mode is open, so its VideoEmbed
+            doesn't run a second YouTube player competing with study mode's.
+            CSS hiding is not enough: a hidden iframe keeps playing. */}
+        {!studyMode && (
         <div className="flex flex-1 gap-0">
           {/* Sidebar */}
           <div className="sticky top-[57px] hidden h-[calc(100vh-57px)] w-72 shrink-0 overflow-y-auto border-r border-divider p-5 lg:block">
@@ -509,6 +512,7 @@ export default function CoursePage() {
             </div>
           </main>
         </div>
+        )}
 
         {/* Mobile milestone bar */}
         <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-divider bg-background/90 backdrop-blur lg:hidden">
