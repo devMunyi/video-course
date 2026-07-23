@@ -83,6 +83,8 @@ export default function VideoEmbed({
   // seeks the live player rather than tearing the iframe down
   const sectionStartRef = useRef(sectionStart)
   sectionStartRef.current = sectionStart
+  const sectionKeyRef = useRef(sectionKey)
+  sectionKeyRef.current = sectionKey
 
   // Jump to the section start when the milestone changes, but not on a
   // re-mount caused purely by switching layouts
@@ -106,8 +108,13 @@ export default function VideoEmbed({
     let cancelled = false
     let saveTimer: ReturnType<typeof setInterval> | null = null
 
-    // Resume where the previous mount left off, otherwise start at the section
-    const resumeAt = player?.lastTimeRef.current ?? null
+    // Resume where the previous mount left off. On a fresh page load there is no
+    // in-memory position, so fall back to the one saved before the reload —
+    // but only if it belongs to the milestone being shown.
+    const inMemory = player?.lastTimeRef.current ?? null
+    const stored = inMemory === null ? player?.restore() : null
+    const resumeAt =
+      inMemory ?? (stored && stored.milestoneId === sectionKeyRef.current ? stored.seconds : null)
     const startAt =
       resumeAt !== null && resumeAt > 0 ? Math.floor(resumeAt) : sectionStartRef.current
 
@@ -138,11 +145,14 @@ export default function VideoEmbed({
         })
         playerRef.current = instance
 
-        // Cheap heartbeat so a remount can resume even if it happens abruptly
+        // Cheap heartbeat so a remount — or a reload — can resume even if it
+        // happens abruptly (crash, closed tab, navigation away)
         saveTimer = setInterval(() => {
           if (!player) return
           const t = instance.getCurrentTime?.()
-          if (typeof t === "number" && t > 0) player.lastTimeRef.current = t
+          if (typeof t !== "number" || t <= 0) return
+          player.lastTimeRef.current = t
+          if (sectionKeyRef.current) player.persist(sectionKeyRef.current, t)
         }, 1000)
       })
       .catch(() => {
@@ -155,7 +165,10 @@ export default function VideoEmbed({
       const instance = playerRef.current
       if (instance && player) {
         const t = instance.getCurrentTime?.()
-        if (typeof t === "number" && t > 0) player.lastTimeRef.current = t
+        if (typeof t === "number" && t > 0) {
+          player.lastTimeRef.current = t
+          if (sectionKeyRef.current) player.persist(sectionKeyRef.current, t)
+        }
       }
       player?.register(null)
       instance?.destroy?.()

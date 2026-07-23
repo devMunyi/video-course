@@ -19,6 +19,7 @@ import { VideoPlayerProvider } from "@/components/course/video-player-context"
 import { useNoteDraft } from "@/components/course/use-note-draft"
 import CompletionCertificate from "@/components/course/CompletionCertificate"
 import { isEmptyNote } from "@/lib/note-html"
+import { loadPosition } from "@/lib/playback-store"
 import { useSession } from "@/lib/auth-client"
 import toast from "react-hot-toast"
 
@@ -123,6 +124,18 @@ export default function CoursePage() {
   const recallReviewDates = (progress?.recallReviewDates ?? {}) as Record<string, string>
 
   const currentMilestone = milestones[currentMilestoneIndex]
+
+  // On a reload, land back on the milestone that was open rather than the first one.
+  // Runs once, and only before the learner has navigated themselves.
+  const [hasRestored, setHasRestored] = useState(false)
+  useEffect(() => {
+    if (hasRestored || milestones.length === 0) return
+    setHasRestored(true)
+    const stored = loadPosition(id)
+    if (!stored) return
+    const index = milestones.findIndex((m) => m.id === stored.milestoneId)
+    if (index > 0) setCurrentMilestoneIndex(index)
+  }, [id, milestones, hasRestored])
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -281,20 +294,22 @@ export default function CoursePage() {
 
   // Ready state
   return (
-    <VideoPlayerProvider>
+    <VideoPlayerProvider courseId={id}>
     <div className="flex min-h-screen flex-col bg-background">
       {studyMode && currentMilestone && (
         <StudyMode
           videoId={course.videoId}
-          milestone={currentMilestone}
+          milestones={milestones}
           index={currentMilestoneIndex}
-          total={milestones.length}
           note={noteDraft.value}
           onNoteChange={noteDraft.onChange}
           status={noteDraft.status}
-          onPrev={() => goToMilestone(Math.max(0, currentMilestoneIndex - 1))}
-          onNext={() => goToMilestone(Math.min(milestones.length - 1, currentMilestoneIndex + 1))}
+          onSelectMilestone={(i) =>
+            goToMilestone(Math.min(milestones.length - 1, Math.max(0, i)))
+          }
           onExit={() => setStudyMode(false)}
+          completedIds={completedMilestones}
+          noteIds={Object.keys(milestoneNotes).filter((mid) => !isEmptyNote(milestoneNotes[mid]))}
         />
       )}
       {/* Top bar */}

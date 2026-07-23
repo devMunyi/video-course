@@ -1,8 +1,15 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Button, Chip } from "@heroui/react"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import {
+  Button,
+  Chip,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/react"
+import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react"
 import RichTextEditor from "@/components/editor/RichTextEditor"
 import VideoEmbed from "./VideoEmbed"
 import { useVideoPlayer } from "./video-player-context"
@@ -18,15 +25,15 @@ type Milestone = {
 
 type Props = {
   videoId: string
-  milestone: Milestone
+  milestones: Milestone[]
   index: number
-  total: number
   note: string
   onNoteChange: (html: string) => void
-  onPrev: () => void
-  onNext: () => void
+  onSelectMilestone: (index: number) => void
   onExit: () => void
   status: string
+  completedIds: string[]
+  noteIds: string[]
 }
 
 const SPLIT_KEY = "study-mode-split"
@@ -35,16 +42,18 @@ const MAX_PCT = 70
 
 export default function StudyMode({
   videoId,
-  milestone,
+  milestones,
   index,
-  total,
   note,
   onNoteChange,
-  onPrev,
-  onNext,
+  onSelectMilestone,
   onExit,
   status,
+  completedIds,
+  noteIds,
 }: Props) {
+  const milestone = milestones[index]
+  const total = milestones.length
   const { getCurrentTime, seekTo } = useVideoPlayer()
   const containerRef = useRef<HTMLDivElement>(null)
   const [splitPct, setSplitPct] = useState(50)
@@ -70,7 +79,13 @@ export default function StudyMode({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return
-      if (document.querySelector("[data-drawing-open='true'], [role='dialog']")) return
+      // Let whatever is layered on top take the Escape first
+      if (
+        document.querySelector(
+          "[data-drawing-open='true'], [role='dialog'], [role='menu'], [role='listbox']",
+        )
+      )
+        return
       onExit()
     }
     window.addEventListener("keydown", onKey)
@@ -103,22 +118,60 @@ export default function StudyMode({
     }
   }, [dragging, onDrag])
 
+  if (!milestone) return null
+
   return (
     <div className="fixed inset-0 z-40 flex flex-col bg-background">
       {/* Header */}
       <div className="flex shrink-0 items-center gap-3 border-b border-divider px-4 py-2">
-        <Chip size="sm" variant="flat" color="primary">
+        <Chip size="sm" variant="flat" color="primary" className="shrink-0">
           {index + 1} / {total}
         </Chip>
-        <h2 className="min-w-0 flex-1 truncate text-sm font-semibold">{milestone.title}</h2>
-        <span className="hidden text-xs text-default-400 sm:inline">{status}</span>
+
+        {/* Jump to any milestone without leaving study mode */}
+        <Dropdown placement="bottom-start">
+          <DropdownTrigger>
+            <Button
+              size="sm"
+              variant="light"
+              className="min-w-0 flex-1 justify-start px-2"
+              endContent={<ChevronDown size={14} className="shrink-0" />}
+            >
+              <span className="truncate text-sm font-semibold">{milestone.title}</span>
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Milestones"
+            selectionMode="single"
+            selectedKeys={[String(index)]}
+            className="max-h-[60vh] overflow-y-auto"
+            onAction={(key) => onSelectMilestone(Number(key))}
+          >
+            {milestones.map((m, i) => (
+              <DropdownItem
+                key={String(i)}
+                description={`${m.timestamp_start} – ${m.timestamp_end}`}
+                startContent={
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-default-100 text-[10px] font-bold">
+                    {completedIds.includes(m.id) ? "✓" : i + 1}
+                  </span>
+                }
+                endContent={noteIds.includes(m.id) ? <span title="Has notes">📝</span> : null}
+              >
+                {m.title}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+
+        <span className="hidden shrink-0 text-xs text-default-400 sm:inline">{status}</span>
         <Button
           size="sm"
           variant="light"
           isIconOnly
           aria-label="Previous milestone"
           isDisabled={index === 0}
-          onPress={onPrev}
+          onPress={() => onSelectMilestone(index - 1)}
         >
           <ChevronLeft size={16} />
         </Button>
@@ -128,7 +181,7 @@ export default function StudyMode({
           isIconOnly
           aria-label="Next milestone"
           isDisabled={index === total - 1}
-          onPress={onNext}
+          onPress={() => onSelectMilestone(index + 1)}
         >
           <ChevronRight size={16} />
         </Button>
