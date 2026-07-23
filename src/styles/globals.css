@@ -183,3 +183,39 @@ body {
 .note-prose .ProseMirror-selectednode {
   @apply outline-2 outline-primary;
 }
+
+/* ─── Printing the all-notes page ─────────────────────────────────────────── */
+
+@media print {
+  /* Ink-friendly: the app is usually viewed dark */
+  html,
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .note-prose,
+  .note-prose * {
+    color: #000;
+  }
+
+  .note-prose a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  /* Keep a section and its heading together where the page break allows */
+  section {
+    break-inside: avoid;
+  }
+
+  .note-prose img {
+    max-height: 60vh;
+    object-fit: contain;
+  }
+
+  .note-timestamp {
+    border: 1px solid #999;
+    background: transparent;
+  }
+}

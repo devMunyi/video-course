@@ -322,6 +322,9 @@ export default function CoursePage() {
           <Button size="sm" variant="flat" color="primary" onPress={() => setStudyMode(true)}>
             Study mode
           </Button>
+          <Button as={Link} href={`/courses/${id}/notes`} size="sm" variant="ghost">
+            All notes
+          </Button>
           <Button
             size="sm"
             variant={course.isPublic ? "flat" : "ghost"}
