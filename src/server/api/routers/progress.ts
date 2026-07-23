@@ -2,6 +2,18 @@ import { z } from "zod"
 import type { Prisma } from "@/generated/prisma/client"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
+/** A note carrying no text and no drawings or images — i.e. nothing worth keeping. */
+function isBlankNote(note: string) {
+  if (!note) return true
+  if (/<(img|excalidraw-drawing|hr|table)\b/i.test(note)) return false
+  return (
+    note
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim().length === 0
+  )
+}
+
 export const progressRouter = createTRPCRouter({
   upsert: protectedProcedure
     .input(
@@ -12,6 +24,8 @@ export const progressRouter = createTRPCRouter({
         completedMilestones: z.array(z.string()).optional(),
         milestoneNotes: z.record(z.string(), z.string()).optional(),
         recallReviewDates: z.record(z.string(), z.string().nullable()).optional(),
+        /** Set only when the user deliberately emptied a note in a focused editor. */
+        allowClearingNotes: z.boolean().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -27,10 +41,18 @@ export const progressRouter = createTRPCRouter({
         ...((existing?.recallSelfScores as Record<string, string>) ?? {}),
         ...(input.recallSelfScores ?? {}),
       }
-      const mergedNotes: Prisma.InputJsonValue = {
-        ...((existing?.milestoneNotes as Record<string, string>) ?? {}),
-        ...(input.milestoneNotes ?? {}),
-      }
+      // A note may only be blanked when the client says the user did it on purpose.
+      // A client bug once overwrote real notes with Tiptap's empty document, so
+      // silently dropping content is refused here rather than trusted.
+      const existingNotes = (existing?.milestoneNotes as Record<string, string>) ?? {}
+      const incomingNotes = Object.fromEntries(
+        Object.entries(input.milestoneNotes ?? {}).filter(([milestoneId, note]) => {
+          if (!isBlankNote(note)) return true
+          if (isBlankNote(existingNotes[milestoneId] ?? "")) return true
+          return input.allowClearingNotes === true
+        }),
+      )
+      const mergedNotes: Prisma.InputJsonValue = { ...existingNotes, ...incomingNotes }
       const mergedMilestones = [
         ...new Set([
           ...(existing?.completedMilestones ?? []),

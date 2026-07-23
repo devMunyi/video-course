@@ -109,6 +109,8 @@ export default function RichTextEditor({
   const editorRef = useRef<Editor | null>(null)
   const onChangeRef = useRef(onChange)
   onChangeRef.current = onChange
+  /** False until the user actually interacts with this editor instance. */
+  const hasUserTouchedRef = useRef(false)
   const onSeekRef = useRef(onSeek)
   onSeekRef.current = onSeek
   const getVideoTimeRef = useRef(getVideoTime)
@@ -175,6 +177,7 @@ export default function RichTextEditor({
         )
         const instance = editorRef.current
         if (!files.length || !instance) return false
+        hasUserTouchedRef.current = true
         event.preventDefault()
         void insertImageFiles(instance, files)
         return true
@@ -186,11 +189,13 @@ export default function RichTextEditor({
         )
         const instance = editorRef.current
         if (!files.length || !instance) return false
+        hasUserTouchedRef.current = true
         event.preventDefault()
         void insertImageFiles(instance, files)
         return true
       },
       handleKeyDown: (_view, event) => {
+        hasUserTouchedRef.current = true
         const mod = event.metaKey || event.ctrlKey
         if (mod && !event.shiftKey && event.key.toLowerCase() === "k") {
           event.preventDefault()
@@ -215,10 +220,22 @@ export default function RichTextEditor({
         return true
       },
     },
+    // Marks this editor as genuinely touched. Toolbar commands all focus first,
+    // so this covers them too.
+    onFocus: () => {
+      hasUserTouchedRef.current = true
+    },
     onCreate: ({ editor: e }) => {
       editorRef.current = e
     },
-    onUpdate: ({ editor: e }) => onChangeRef.current(e.getHTML()),
+    onUpdate: ({ editor: e }) => {
+      // Tiptap emits updates for its own initialisation and plugin transactions.
+      // On an editor the user has never touched, those carry the empty document,
+      // and forwarding them overwrote real notes with "<p></p>". Only a touched
+      // editor is allowed to report changes.
+      if (!hasUserTouchedRef.current) return
+      onChangeRef.current(e.getHTML())
+    },
   })
 
   // Adopt an externally changed document (milestone switch, first server load).

@@ -8,7 +8,7 @@ const DEBOUNCE_MS = 800
 type Options = {
   milestoneId: string
   savedNote: string
-  onSave: (milestoneId: string, note: string) => void
+  onSave: (milestoneId: string, note: string, allowClearing: boolean) => void
   isSaving: boolean
 }
 
@@ -21,7 +21,11 @@ export function useNoteDraft({ milestoneId, savedNote, onSave, isSaving }: Optio
   const [isDirty, setIsDirty] = useState(false)
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingRef = useRef<{ milestoneId: string; note: string } | null>(null)
+  const pendingRef = useRef<{
+    milestoneId: string
+    note: string
+    allowClearing: boolean
+  } | null>(null)
   const loadedIdRef = useRef(milestoneId)
   /** Set once the user types; from then on the local value wins over server echoes. */
   const hasLocalEditRef = useRef(false)
@@ -36,7 +40,7 @@ export function useNoteDraft({ milestoneId, savedNote, onSave, isSaving }: Optio
     const pending = pendingRef.current
     pendingRef.current = null
     setIsDirty(false)
-    if (pending) onSaveRef.current(pending.milestoneId, pending.note)
+    if (pending) onSaveRef.current(pending.milestoneId, pending.note, pending.allowClearing)
   }, [])
 
   useEffect(() => {
@@ -54,9 +58,15 @@ export function useNoteDraft({ milestoneId, savedNote, onSave, isSaving }: Optio
   }, [milestoneId, savedNote, flush])
 
   const onChange = useCallback((html: string) => {
+    // Emptying a note is only accepted while the editor genuinely has focus.
+    // Without this, any stray empty update would erase real notes; the server
+    // enforces the same rule via allowClearingNotes.
+    const active = document.activeElement as HTMLElement | null
+    const allowClearing = active?.isContentEditable === true
+
     hasLocalEditRef.current = true
     setValue(html)
-    pendingRef.current = { milestoneId: loadedIdRef.current, note: html }
+    pendingRef.current = { milestoneId: loadedIdRef.current, note: html, allowClearing }
     setIsDirty(true)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
@@ -64,7 +74,7 @@ export function useNoteDraft({ milestoneId, savedNote, onSave, isSaving }: Optio
       const pending = pendingRef.current
       pendingRef.current = null
       setIsDirty(false)
-      if (pending) onSaveRef.current(pending.milestoneId, pending.note)
+      if (pending) onSaveRef.current(pending.milestoneId, pending.note, pending.allowClearing)
     }, DEBOUNCE_MS)
   }, [])
 

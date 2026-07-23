@@ -207,10 +207,11 @@ export default function CoursePage() {
   )
 
   const handleSaveNote = useCallback(
-    (milestoneId: string, note: string) => {
+    (milestoneId: string, note: string, allowClearing: boolean) => {
       upsertProgress.mutate({
         courseId: id,
         milestoneNotes: { [milestoneId]: note },
+        allowClearingNotes: allowClearing,
       })
     },
     [id, upsertProgress],
