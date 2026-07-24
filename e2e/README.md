@@ -5,6 +5,12 @@ notes editor (autosave, per-section isolation, persistence, formatting).
 
 ## Running
 
+First time only — create the (gitignored) env file:
+
+```bash
+cp .env.test.example .env.test
+```
+
 ```bash
 bun run e2e          # headless, full suite
 bun run e2e:ui       # Playwright UI mode

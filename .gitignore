@@ -14,4 +14,4 @@ tsconfig.tsbuildinfo
 e2e/.auth/
 test-results/
 playwright-report/
-!.env.test
+!.env*.example
