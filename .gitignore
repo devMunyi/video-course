@@ -9,3 +9,9 @@ src/generated/
 .env*
 .claude/
 tsconfig.tsbuildinfo
+
+# e2e
+e2e/.auth/
+test-results/
+playwright-report/
+!.env.test

@@ -16,7 +16,11 @@
     "db:migrate:prod": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "bun prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:db:up": "docker compose -f docker-compose.e2e.yml up -d --wait",
+    "e2e:db:down": "docker compose -f docker-compose.e2e.yml down"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.55.0",
@@ -65,11 +69,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/node": "^25.3.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "dotenv": "^17.3.1",
+    "dotenv-cli": "^11.0.0",
     "postcss": "^8.5.0",
     "prisma": "7.4.2",
     "tailwindcss": "^4.2.1",

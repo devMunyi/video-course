@@ -119,7 +119,10 @@ export default function StudyMode({
       {/* Header */}
       <div className="flex shrink-0 items-center gap-3 border-b border-divider px-4 py-2">
         {/* Full wording where there's room, bare count when space is tight */}
-        <span className="shrink-0 whitespace-nowrap text-xs text-default-500">
+        <span
+          data-testid="section-counter"
+          className="shrink-0 whitespace-nowrap text-xs text-default-500"
+        >
           <span className="hidden md:inline">Showing section </span>
           <strong className="text-foreground">{index + 1}</strong> of {total}
           <span className="hidden md:inline"> section{total === 1 ? "" : "s"}</span>
@@ -129,6 +132,7 @@ export default function StudyMode({
         <Dropdown placement="bottom-start">
           <DropdownTrigger>
             <Button
+              data-testid="section-dropdown-trigger"
               size="sm"
               variant="light"
               className="min-w-0 flex-1 justify-start px-2"
@@ -161,7 +165,12 @@ export default function StudyMode({
           </DropdownMenu>
         </Dropdown>
 
-        <span className="hidden shrink-0 text-xs text-default-400 sm:inline">{status}</span>
+        <span
+          data-testid="note-status"
+          className="hidden shrink-0 text-xs text-default-400 sm:inline"
+        >
+          {status}
+        </span>
         <Button
           size="sm"
           variant="flat"

@@ -97,7 +97,12 @@ export default function VideoEmbed({
     if (lastSectionRef.current === sectionKey) return
     lastSectionRef.current = sectionKey
     if (player) player.lastTimeRef.current = null
-    playerRef.current?.seekTo(sectionStart, true)
+    // seekTo only exists once the player has fired onReady. A section change
+    // before then (fast Next click, or an embed that never became ready) must
+    // not throw — the fresh mount already starts at the right section.
+    if (typeof playerRef.current?.seekTo === "function") {
+      playerRef.current.seekTo(sectionStart, true)
+    }
   }, [sectionKey, sectionStart, player])
 
   useEffect(() => {

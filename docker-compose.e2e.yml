@@ -1,0 +1,22 @@
+# Throwaway Postgres for e2e. Port 55432 so it never collides with a local
+# 5432 or the app's Neon connection. Data is tmpfs — wiped on container stop,
+# which is the point: every run starts clean.
+services:
+  postgres-e2e:
+    image: postgres:18-alpine
+    container_name: video-course-e2e-db
+    environment:
+      POSTGRES_USER: e2e
+      POSTGRES_PASSWORD: e2e
+      POSTGRES_DB: video_course_e2e
+    ports:
+      - "55432:5432"
+    # PG18 stores data in a version subdir under /var/lib/postgresql — mount the
+    # parent, not /data (the container refuses /data as a bare mount).
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U e2e -d video_course_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
